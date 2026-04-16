@@ -31,6 +31,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.supikashi.recharge.analytics.AnalyticsLogger
 import com.supikashi.recharge.components.BreakProgressChart
 import com.supikashi.recharge.components.TaskCard
 import com.supikashi.recharge.components.TopBar
@@ -50,17 +53,16 @@ import com.supikashi.recharge.utils.formatDayOfWeek
 import com.supikashi.recharge.viewmodels.SlotViewModel
 import com.supikashi.recharge.viewmodels.StatisticsViewModel
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
-import recharge.composeapp.generated.resources.arrow_back
 import recharge.composeapp.generated.resources.arrow_left
 import recharge.composeapp.generated.resources.calendar
 import recharge.composeapp.generated.resources.home
-import recharge.composeapp.generated.resources.mascot
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -68,13 +70,26 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun StatisticsScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToSchedule: () -> Unit,
+    onNavigateToSchedule: (LocalDate) -> Unit, //
+    calendarResult: LocalDate? = null,
+    onNavigateToCalendar: (LocalDate) -> Unit = {},
     viewModel: StatisticsViewModel = koinViewModel()
 ) {
-    var selectedDate by remember { mutableStateOf(Clock.System.todayIn(TimeZone.currentSystemDefault())) }
+    val LocalDateSaver = Saver<LocalDate, Long>(
+        save = { it.toEpochDays() },
+        restore = { LocalDate.fromEpochDays(it.toInt()) }
+    )
+
+    var selectedDate by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf(Clock.System.todayIn(TimeZone.currentSystemDefault())) }
     
     LaunchedEffect(selectedDate) {
         viewModel.setSelectedDate(selectedDate)
+    }
+
+    LaunchedEffect(calendarResult) {
+        calendarResult?.let {
+            selectedDate = it
+        }
     }
     
     val dailyStats by viewModel.dailyStats.collectAsStateWithLifecycle()
@@ -87,8 +102,8 @@ fun StatisticsScreen(
                 .fillMaxSize()
         ) {
             TopBar(
-                leftAction = onNavigateBack,
-                leftIcon = Res.drawable.arrow_back,
+                leftAction = { onNavigateToCalendar(selectedDate) },
+                leftIcon = Res.drawable.calendar,
                 rightAction = onNavigateBack,
                 rightIcon = Res.drawable.home,
                 modifier = Modifier.padding(horizontal = 20.dp)
@@ -129,6 +144,7 @@ fun StatisticsScreen(
                 Row {
                     IconButton(
                         onClick = {
+                            AnalyticsLogger.logEvent("statistics_prev_day_clicked")
                             selectedDate = selectedDate.plus(-1, DateTimeUnit.DAY)
                         }
                     ) {
@@ -140,6 +156,7 @@ fun StatisticsScreen(
 
                     IconButton(
                         onClick = {
+                            AnalyticsLogger.logEvent("statistics_next_day_clicked")
                             selectedDate = selectedDate.plus(1, DateTimeUnit.DAY)
                         }
                     ) {
@@ -169,7 +186,10 @@ fun StatisticsScreen(
                             contentColor = MaterialTheme.colorScheme.background,
                             containerColor = MaterialTheme.colorScheme.onBackground
                         ),
-                        onClick = onNavigateToSchedule
+                        onClick = {
+                            AnalyticsLogger.logEvent("statistics_setup_schedule_clicked")
+                            onNavigateToSchedule(selectedDate) //
+                        }
                     ) {
                         Text(
                             text = "Настроить расписание перерывов",

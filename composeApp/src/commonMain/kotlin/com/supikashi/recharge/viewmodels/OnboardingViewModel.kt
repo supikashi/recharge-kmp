@@ -31,13 +31,15 @@ class OnboardingViewModel(
 
     val totalPages = 3
 
-    init {
-        checkOnboardingStatus()
-    }
-
-    private fun checkOnboardingStatus() {
+    fun checkOnboardingStatus(isFromSettings: Boolean = false) {
         viewModelScope.launch {
-            delay(1000)
+            if (isFromSettings) {
+                // If coming from settings, we just show the onboarding
+                // and resetting current page to 0 is handled by default
+                _onboardingState.value = OnboardingState.ShowOnboarding
+                return@launch
+            }
+
             _onboardingState.value = if (userPreferencesRepository.isOnboardingCompleted.first()) {
                 OnboardingState.NavigateToHome
             } else {

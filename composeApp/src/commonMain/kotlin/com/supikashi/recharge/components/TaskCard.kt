@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,10 +21,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,134 +70,70 @@ fun TaskCard(
     else
         MaterialTheme.colorScheme.onBackground
 
-    var offsetX by remember { mutableStateOf(0f) }
-    val animatedOffsetX by animateFloatAsState(targetValue = offsetX)
-    
-    Box(
-        modifier = modifier.fillMaxWidth()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .padding(start = 65.dp)
-                .background(MaterialTheme.colorScheme.onBackground, RoundedCornerShape(10.dp)),
-            contentAlignment = Alignment.CenterEnd
+        Icon(
+            painter = painterResource(Res.drawable.clock),
+            contentDescription = null,
+            tint = Color.Unspecified,
+            modifier = Modifier.size(15.dp).align(Alignment.Top)
+        )
+        Spacer(modifier = Modifier.width(5.dp))
+        Column(
+            modifier = Modifier.align(Alignment.Top).width(35.dp),
         ) {
-            IconButton(
-                onClick = {
-                    onDelete()
-                    offsetX = 0f
-                },
-                modifier = Modifier
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.trash),
-                    contentDescription = "Удалить",
-                    tint = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+            Text(
+                text = formatMinutesToTime(task.startTime),
+                style = MaterialTheme.typography.labelMedium,
+                color = Color(0xFFAEAEAC),
+            )
+            Text(
+                text = formatMinutesToTime(task.endTime),
+                style = MaterialTheme.typography.labelMedium,
+                color = Color(0xFFAEAEAC),
+            )
         }
 
-        Row(
+        Spacer(Modifier.width(10.dp))
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures(
-                        onDragEnd = {
-                            offsetX = if (offsetX < -50f) -150f else 0f
-                        },
-                        onHorizontalDrag = { _, dragAmount ->
-                            val newOffset = offsetX + dragAmount
-                            offsetX = newOffset.coerceIn(-150f, 0f)
-                        }
-                    )
-                },
-            verticalAlignment = Alignment.CenterVertically
+                .clip(RoundedCornerShape(10.dp))
+                .background(container)
+                .clickable { onClick() }
+                .padding(vertical = 10.dp)
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.clock),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(15.dp).align(Alignment.Top)
+            Text(
+                text = task.name.ifEmpty { "Без названия" },
+                style = MaterialTheme.typography.bodyMedium,
+                color = content,
+                modifier = Modifier.padding(horizontal = 10.dp)
             )
-            Spacer(modifier = Modifier.width(5.dp))
-            Column(
-                modifier = Modifier.align(Alignment.Top).width(35.dp),
-            ) {
-                Text(
-                    text = formatMinutesToTime(task.startTime),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color(0xFFAEAEAC),
-                )
-                Text(
-                    text = formatMinutesToTime(task.endTime),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color(0xFFAEAEAC),
-                )
-            }
-
-            Spacer(Modifier.width(10.dp))
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = CardDefaults.cardColors().copy(
-                    containerColor = container,
-                    contentColor = content
-                ),
-                shape = RoundedCornerShape(10.dp)
-            ) {
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable { onClick() }
-                        .padding(vertical = 10.dp),
+            if (task.isSplittable) {
+                Spacer(Modifier.height(5.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 10.dp)
                 ) {
-                    Text(
-                        text = task.name.ifEmpty { "Без названия" },
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(horizontal = 10.dp)
-                    )
-                    if (task.isSplittable) {
-                        Spacer(Modifier.height(5.dp))
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            contentPadding = PaddingValues(horizontal = 10.dp)
-                        ) {
-                            items(taskWithBreaks.breaks) {
-                                Text(
-                                    text = formatMinutesToTime(it.time),
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.tertiary)
-                                        .padding(vertical = 2.dp, horizontal = 5.dp)
-                                )
-                            }
-                        }
+                    taskWithBreaks.breaks.forEach { breakItem ->
+                        Text(
+                            text = formatMinutesToTime(breakItem.time),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.tertiary)
+                                .padding(vertical = 2.dp, horizontal = 5.dp)
+                        )
                     }
                 }
             }
         }
-    }
-}
-
-@Preview()
-@Composable
-fun TaskCardPreview() {
-    AppTheme {
-        TaskCard(
-            taskWithBreaks = TaskWithBreaks(
-                task = Task(
-                    name = "name",
-                    isWork = true,
-                    isSplittable = true,
-                ),
-                breaks = listOf(Break(time = 100), Break(time = 111), Break(time = 250),)
-            )
-        )
     }
 }

@@ -8,7 +8,13 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.supikashi.recharge.database.getRoomDatabase
 import com.supikashi.recharge.di.KoinInitializer
 
-var shouldOpenBreakNotificationScreen: Boolean = false
+private val _shouldOpenBreakNotification = mutableStateOf(false)
+
+var shouldOpenBreakNotificationScreen: Boolean
+    get() = _shouldOpenBreakNotification.value
+    set(value) {
+        _shouldOpenBreakNotification.value = value
+    }
 
 fun MainViewController() = ComposeUIViewController(
     configure = {
@@ -19,12 +25,13 @@ fun MainViewController() = ComposeUIViewController(
         getRoomDatabase(getDatabaseBuilder()).taskDao()
     }
 
-    var shouldOpen by remember { mutableStateOf(shouldOpenBreakNotificationScreen) }
+    val shouldOpen by _shouldOpenBreakNotification
     
     App(
         taskDao = dao,
-        shouldOpenBreakNotification = shouldOpen
+        shouldOpenBreakNotification = shouldOpen,
+        onBreakNotificationNavigated = {
+            shouldOpenBreakNotificationScreen = false
+        }
     )
-
-    shouldOpenBreakNotificationScreen = false
 }

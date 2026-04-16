@@ -1,12 +1,13 @@
 package com.supikashi.recharge.viewmodels
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supikashi.recharge.data.UserPreferencesRepository
 import com.supikashi.recharge.database.Break
 import com.supikashi.recharge.database.TaskDatabase
 import com.supikashi.recharge.models.PomodoroType
+import com.supikashi.recharge.notifications.ExactBreakNotification
+import com.supikashi.recharge.notifications.NotificationScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +22,7 @@ import kotlin.time.ExperimentalTime
 class BreakNotificationViewModel(
     private val database: TaskDatabase,
     private val userPreferencesRepository: UserPreferencesRepository,
+    private val notificationScheduler: NotificationScheduler,
 ) : ViewModel() {
     private val dao = database.taskDao()
 
@@ -45,7 +47,7 @@ class BreakNotificationViewModel(
     private fun loadCurrentBreak() {
         viewModelScope.launch {
             _isLoading.value = true
-            val breaks = dao.getAllBreaksFlow().first()
+            val breaks = dao.getAllBreaksSorted()
             val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
             val today = now.date
             val currentTimeMinutes = now.hour * 60 + now.minute
@@ -54,7 +56,7 @@ class BreakNotificationViewModel(
                 breakItem.date == today &&
                         !breakItem.isCompleted &&
                         breakItem.time <= currentTimeMinutes &&
-                        currentTimeMinutes < breakItem.time + 5
+                        currentTimeMinutes <= breakItem.time + 10
             }
 
             _currentBreak.value = activeBreak
@@ -62,10 +64,24 @@ class BreakNotificationViewModel(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     fun markBreakCompleted() {
         viewModelScope.launch {
             _currentBreak.value?.let { breakItem ->
                 dao.markBreakCompleted(breakItem.id)
+                val duration = pomodoroType?.restMinutes ?: 5
+                
+                val exactEndMillis = Clock.System.now().toEpochMilliseconds() + duration * 60 * 1000L
+                
+                val endNotification = ExactBreakNotification(
+                    id = -breakItem.id,
+                    taskId = breakItem.taskId,
+                    title = "Перерыв окончен!",
+                    message = "Пора возвращаться к задачам",
+                    timeMillis = exactEndMillis
+                )
+                
+                notificationScheduler.scheduleExactBreakNotification(endNotification)
             }
         }
     }

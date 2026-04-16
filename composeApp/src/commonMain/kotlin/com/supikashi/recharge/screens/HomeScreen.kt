@@ -1,12 +1,15 @@
 package com.supikashi.recharge.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,8 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,9 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,33 +37,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.supikashi.recharge.viewmodels.HomeViewModel
+import com.supikashi.recharge.analytics.AnalyticsLogger
 import com.supikashi.recharge.theme.AppTheme
 import com.supikashi.recharge.theme.mascotPrimary
+import com.supikashi.recharge.viewmodels.HomeViewModel
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.avatar
-import recharge.composeapp.generated.resources.frame_1
 import recharge.composeapp.generated.resources.frame_1_png
-import recharge.composeapp.generated.resources.frame_2
 import recharge.composeapp.generated.resources.frame_2_png
-import recharge.composeapp.generated.resources.frame_3
 import recharge.composeapp.generated.resources.frame_3_png
 import recharge.composeapp.generated.resources.notification
 
@@ -76,13 +75,32 @@ fun HomeScreen(
     onNavigateToRest: () -> Unit = {},
     onNavigateToStatistics: () -> Unit = {},
     onNavigateToBreakNotification: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
 ) {
     val viewModel: HomeViewModel = koinViewModel()
     val isFirstScheduleVisit by viewModel.isFirstScheduleVisit.collectAsStateWithLifecycle()
     val currentBreak by viewModel.currentBreak.collectAsStateWithLifecycle()
-    Scaffold { paddingValues ->
+    
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.refreshCurrentBreak()
+    }
+
+    var isVisible by rememberSaveable { mutableStateOf(false) }
+    val alpha by animateFloatAsState(
+        targetValue = if (isVisible) 1f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+    )
+
+    LaunchedEffect(Unit) {
+        isVisible = true
+    }
+
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
         Column(
             modifier = Modifier
+                .alpha(alpha)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.mascotPrimary)
                 .padding(top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding()),
@@ -101,15 +119,24 @@ fun HomeScreen(
                         .height(50.dp)
                         .padding(horizontal = 20.dp)
                         .clickable {
-                            viewModel.resetCounter()
+                            AnalyticsLogger.logEvent("home_avatar_clicked")
+                            onNavigateToSettings()
                         }
                 )
 
-                if (currentBreak != null) {
+                AnimatedVisibility(
+                    visible = currentBreak != null,
+                    enter = slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }),
+                    exit = slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }),
+                    modifier = Modifier.weight(1f)
+                ) {
                     Button(
-                        onClick = onNavigateToBreakNotification,
+                        onClick = {
+                            AnalyticsLogger.logEvent("home_break_notification_clicked")
+                            onNavigateToBreakNotification()
+                        },
                         modifier = Modifier
-                            .weight(1f)
+                            .fillMaxWidth()
                             .height(50.dp),
                         shape = RoundedCornerShape(
                             topStart = 10.dp,
@@ -179,6 +206,7 @@ fun HomeScreen(
                             contentColor = MaterialTheme.colorScheme.onBackground,
                             resource = Res.drawable.frame_1_png,
                             onClick = {
+                                AnalyticsLogger.logEvent("home_open_schedule_clicked")
                                 if (isFirstScheduleVisit) {
                                     onNavigateToPomodoroSelection()
                                 } else {
@@ -195,7 +223,10 @@ fun HomeScreen(
                             backgroundColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onSurface,
                             resource = Res.drawable.frame_2_png,
-                            onClick = onNavigateToRest,
+                            onClick = {
+                                AnalyticsLogger.logEvent("home_open_rest_clicked")
+                                onNavigateToRest()
+                            },
                             width = itemWidth,
                         )
                     }
@@ -206,7 +237,10 @@ fun HomeScreen(
                             backgroundColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onBackground,
                             resource = Res.drawable.frame_3_png,
-                            onClick = onNavigateToStatistics,
+                            onClick = {
+                                AnalyticsLogger.logEvent("home_open_statistics_clicked")
+                                onNavigateToStatistics()
+                            },
                             width = itemWidth,
                         )
                     }
@@ -247,7 +281,7 @@ fun NavigationCard(
                 .padding(20.dp),
             verticalArrangement = Arrangement.Top
         ) {
-            Text(
+            Text( //
                 text = title,
                 style = MaterialTheme.typography.headlineMedium
             )

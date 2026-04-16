@@ -32,11 +32,22 @@ interface TaskDao {
     @Query("SELECT * FROM Task ORDER BY startTime ASC")
     fun getAllTasksWithBreaks(): Flow<List<TaskWithBreaks>>
 
+    @Transaction
+    @Query("SELECT * FROM Task WHERE date = :date ORDER BY startTime ASC")
+    fun getTasksWithBreaksByDate(date: kotlinx.datetime.LocalDate): Flow<List<TaskWithBreaks>>
+
+    @Transaction
+    @Query("SELECT * FROM Task WHERE date = :date ORDER BY startTime ASC")
+    suspend fun getTasksWithBreaksByDateSync(date: kotlinx.datetime.LocalDate): List<TaskWithBreaks>
+
     @Insert
     suspend fun insertBreak(breakItem: Break): Long
 
     @Delete
     suspend fun deleteBreak(breakItem: Break)
+
+    @Delete
+    suspend fun deleteBreaks(breaks: List<Break>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBreaks(breaks: List<Break>): List<Long>
@@ -55,12 +66,11 @@ interface TaskDao {
 
     @Query("""
         SELECT * FROM Break 
-        WHERE isNotificationScheduled = 0
-        AND (date > :today OR (date = :today AND time > :currentTimeMinutes))
+        WHERE (date > :today OR (date = :today AND time > :currentTimeMinutes))
         ORDER BY date ASC, time ASC 
         LIMIT :limit
     """)
-    suspend fun getBreaksWithoutNotification(today: String, currentTimeMinutes: Int, limit: Int): List<Break>
+    suspend fun getNextBreaksWithLimit(today: String, currentTimeMinutes: Int, limit: Int): List<Break>
 
     @Query("""
         SELECT COUNT(*) FROM Break 
@@ -89,12 +99,27 @@ interface TaskDao {
     fun getBreaksByDate(date: String): Flow<List<Break>>
 
     @Transaction
+    suspend fun updateTaskSchedule(
+        task: Task,
+        breaksToDelete: List<Break>,
+        breaksToInsert: List<Break>
+    ) {
+        upsert(task)
+        if (breaksToDelete.isNotEmpty()) {
+            deleteBreaks(breaksToDelete)
+        }
+        if (breaksToInsert.isNotEmpty()) {
+            insertBreaks(breaksToInsert)
+        }
+    }
+
+    @Transaction
     suspend fun postponeBreak(currentBreak: Break, breakDuration: Int) {
         val taskWithBreaks = getTaskWithBreaks(currentBreak.taskId)
         val task = taskWithBreaks.task
 
         val breaksToPostpone = taskWithBreaks.breaks.filter { 
-            it.date == currentBreak.date && it.time >= currentBreak.time - 6
+            it.date == currentBreak.date && it.time >= currentBreak.time
         }
 
         breaksToPostpone.forEach { breakItem ->

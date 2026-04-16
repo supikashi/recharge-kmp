@@ -15,6 +15,6 @@ data class Task @OptIn(ExperimentalTime::class) constructor(
     val date: LocalDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
     val startTime: Int = 0,
     val endTime: Int = 0,
-    val isWork: Boolean = false,
-    val isSplittable: Boolean = false,
+    val isWork: Boolean = true,
+    val isSplittable: Boolean = true,
 )

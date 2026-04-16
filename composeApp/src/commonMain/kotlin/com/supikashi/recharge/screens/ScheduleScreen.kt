@@ -1,7 +1,8 @@
 package com.supikashi.recharge.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,12 +16,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -33,23 +41,32 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.supikashi.recharge.analytics.AnalyticsLogger
 import com.supikashi.recharge.database.Task
 import com.supikashi.recharge.components.TaskCard
 import com.supikashi.recharge.components.TimeRangeInputManual
 import com.supikashi.recharge.components.TopBar
 import com.supikashi.recharge.components.WorkRestSwitch
+import com.supikashi.recharge.components.OverlapWarningDialog
 import com.supikashi.recharge.theme.AppTheme
 import com.supikashi.recharge.theme.mascotPrimary
 import com.supikashi.recharge.utils.formatDate
@@ -73,6 +90,7 @@ import recharge.composeapp.generated.resources.close_circle
 import recharge.composeapp.generated.resources.home
 import recharge.composeapp.generated.resources.mascot
 import recharge.composeapp.generated.resources.tick_circle
+import recharge.composeapp.generated.resources.trash
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -80,22 +98,51 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun ScheduleScreen(
     onNavigateHome: () -> Unit = {},
+    calendarResult: LocalDate? = null,
+    onNavigateToCalendar: (LocalDate) -> Unit = {}
 ) {
     val viewModel: SlotViewModel = koinViewModel()
-    val slots by viewModel.tasks.collectAsStateWithLifecycle()
-    var newSlot by remember { mutableStateOf(Task()) }
-    var editedSlot by remember { mutableStateOf<Task?>(null) }
-    var isSlotCard by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf(Clock.System.todayIn(TimeZone.currentSystemDefault())) }
+    val filteredTasks by viewModel.filteredTasks.collectAsStateWithLifecycle()
+    val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
+
+    val taskSaver = remember {
+        listSaver<Task, Any>(
+            save = { listOf(it.id, it.name, it.date.toEpochDays(), it.startTime, it.endTime, it.isWork, it.isSplittable) },
+            restore = { Task(
+                id = it[0] as Int,
+                name = it[1] as String,
+                date = LocalDate.fromEpochDays((it[2] as Number).toInt()),
+                startTime = it[3] as Int,
+                endTime = it[4] as Int,
+                isWork = it[5] as Boolean,
+                isSplittable = it[6] as Boolean
+            ) }
+        )
+    }
+
+    var newSlot by rememberSaveable(stateSaver = taskSaver) { mutableStateOf(Task()) }
+    var isSlotCard by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(calendarResult) {
+        calendarResult?.let {
+            viewModel.updateSelectedDate(it)
+            newSlot = newSlot.copy(date = it)
+        }
+    }
+
     Scaffold { paddingValues ->
+        val focusManager = LocalFocusManager.current
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.background(MaterialTheme.colorScheme.mascotPrimary)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                }
                 .padding(top = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding())
                 .fillMaxSize()
         ) {
             TopBar(
-                leftAction = { viewModel.upsertTask(Task()) },
+                leftAction = { onNavigateToCalendar(selectedDate) },
                 leftIcon = Res.drawable.calendar,
                 rightAction = onNavigateHome,
                 rightIcon = Res.drawable.home,
@@ -115,8 +162,9 @@ fun ScheduleScreen(
             Row {
                 IconButton(
                     onClick = {
-                        selectedDate = selectedDate.plus(-1, DateTimeUnit.DAY)
-                        newSlot = newSlot.copy(date = selectedDate)
+                        AnalyticsLogger.logEvent("schedule_prev_day_clicked")
+                        viewModel.updateSelectedDate(selectedDate.plus(-1, DateTimeUnit.DAY))
+                        newSlot = newSlot.copy(date = selectedDate.plus(-1, DateTimeUnit.DAY))
                     }
                 ) {
                     Icon(
@@ -127,8 +175,9 @@ fun ScheduleScreen(
 
                 IconButton(
                     onClick = {
-                        selectedDate = selectedDate.plus(1, DateTimeUnit.DAY)
-                        newSlot = newSlot.copy(date = selectedDate)
+                        AnalyticsLogger.logEvent("schedule_next_day_clicked")
+                        viewModel.updateSelectedDate(selectedDate.plus(1, DateTimeUnit.DAY))
+                        newSlot = newSlot.copy(date = selectedDate.plus(1, DateTimeUnit.DAY))
                     }
                 ) {
                     Icon(
@@ -157,21 +206,32 @@ fun ScheduleScreen(
                 if (isSlotCard) {
                     NewSlot(
                         modifier = Modifier.fillMaxSize(),
-                        slots = slots.filter { it.task.date == selectedDate }.map { it.task },
+                        slots = filteredTasks?.map { it.task } ?: emptyList(),
                         newSlot = newSlot,
                         onChange = { newSlot = it },
                         onBack = {
+                            AnalyticsLogger.logEvent("schedule_close_task_clicked")
                             isSlotCard = false
-                            newSlot = Task()
+                            newSlot = Task(date = selectedDate)
                         },
                         onSave = {
+                            AnalyticsLogger.logEvent("schedule_save_task_clicked")
                             viewModel.upsertTask(newSlot)
                             isSlotCard = false
-                            newSlot = Task()
+                            newSlot = Task(date = selectedDate)
+                        },
+                        onDelete = {
+                            AnalyticsLogger.logEvent("schedule_delete_task_clicked")
+                            viewModel.deleteTask(newSlot)
+                            isSlotCard = false
+                            newSlot = Task(date = selectedDate)
                         }
                     )
                 } else {
-                    if (slots.none { it.task.date == selectedDate }) {
+                    if (filteredTasks == null) {
+                        // Показываем загрузку или ничего, чтобы избежать моргания
+                        Spacer(modifier = Modifier.weight(1f))
+                    } else if (filteredTasks!!.isEmpty()) {
                         Text(
                             text = "В расписании на этот день пока\nничего нет, давай его дополним",
                             style = MaterialTheme.typography.bodyMedium
@@ -182,26 +242,39 @@ fun ScheduleScreen(
                             tint = Color.Unspecified,
                         )
                     } else {
-                        LazyColumn(
-                            modifier = Modifier.weight(1f),
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.spacedBy(5.dp)
                         ) {
-                            items(key = {it.task.id}, items = slots.filter { it.task.date == selectedDate }) { slot ->
-                                TaskCard(
-                                    taskWithBreaks = slot,
-                                    onClick = {
-                                        newSlot = slot.task
-                                        isSlotCard = true
-                                    },
-                                    onDelete = {
-                                        viewModel.deleteTask(slot.task)
-                                    }
-                                )
+                            filteredTasks!!.forEach { slot ->
+                                key(slot.task.id) {
+                                    TaskCard(
+                                        taskWithBreaks = slot,
+                                        onClick = {
+                                            newSlot = slot.task
+                                            isSlotCard = true
+                                        },
+                                        onDelete = {
+                                            viewModel.deleteTask(slot.task)
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
-                    Button(onClick = { isSlotCard = true }) {
-                        Text("Добавить задачу")
+                    Button(
+                        onClick = {
+                            AnalyticsLogger.logEvent("schedule_add_task_clicked")
+                            isSlotCard = true
+                        },
+                        colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground)
+                    ) {
+                        Text(
+                            text = "Добавить задачу",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }
@@ -216,24 +289,43 @@ private fun NewSlot(
     onBack: () -> Unit = {},
     newSlot: Task = Task(),
     onChange: (Task) -> Unit = {},
-    onSave: () -> Unit = {}
+    onSave: () -> Unit = {},
+    onDelete: () -> Unit = {}
 ) {
-    var fromTime by remember(newSlot.id) { 
-        mutableStateOf(if (newSlot.id != 0) formatMinutesToTime(newSlot.startTime) else "")
+    var fromTime by remember(newSlot.id) {
+        mutableStateOf(formatMinutesToTime(newSlot.startTime))
     }
-    var toTime by remember(newSlot.id) { 
-        mutableStateOf(if (newSlot.id != 0) formatMinutesToTime(newSlot.endTime) else "")
+    var toTime by remember(newSlot.id) {
+        mutableStateOf(formatMinutesToTime(newSlot.endTime))
     }
+
+    val fromMinutes = remember(fromTime) { parseTimeToMinutes(fromTime) }
+    val toMinutes = remember(toTime) { parseTimeToMinutes(toTime) }
 
     fun hasTimeOverlap(task: Task): Boolean {
-        val fromMinutes = parseTimeToMinutes(fromTime) ?: return false
-        val toMinutes = parseTimeToMinutes(toTime) ?: return false
-
+        if (fromMinutes == null || toMinutes == null) return false
         if (task.id == newSlot.id) return false
-
         return fromMinutes < task.endTime && toMinutes > task.startTime
     }
+
+    fun isBlockingOverlap(existingTask: Task): Boolean {
+        val overlapsTime = hasTimeOverlap(existingTask)
+        return overlapsTime && (newSlot.isWork || !existingTask.isWork)
+    }
+
+    var showOverlapWarningDialog by remember { mutableStateOf(false) }
+
+    if (showOverlapWarningDialog) {
+        OverlapWarningDialog(
+            onDismiss = { showOverlapWarningDialog = false },
+            onConfirm = {
+                showOverlapWarningDialog = false
+                onSave()
+            }
+        )
+    }
     
+    val focusManager = LocalFocusManager.current
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(30.dp),
@@ -243,14 +335,32 @@ private fun NewSlot(
         )
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 20.dp),
+            modifier = Modifier
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { focusManager.clearFocus() })
+                }
+                .padding(vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Text(
-                text = "Новый слот",
-                style = MaterialTheme.typography.titleMedium
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.close_circle),
+                        contentDescription = "Назад",
+                    )
+                }
+                Text(
+                    text = if (newSlot.id == 0) "Новый слот" else "Редактирование",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
 
             if (slots.isNotEmpty()) {
                 LazyRow(
@@ -259,7 +369,7 @@ private fun NewSlot(
                     contentPadding = PaddingValues(horizontal = 20.dp)
                 ) {
                     items(slots) { slot ->
-                        val hasOverlap = hasTimeOverlap(slot)
+                        val hasOverlap = isBlockingOverlap(slot)
                         Box(
                             modifier = Modifier
                                 .height(20.dp)
@@ -298,6 +408,10 @@ private fun NewSlot(
                 value = newSlot.name,
                 onValueChange = { onChange(newSlot.copy(name = it)) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Next) }
+                ),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Start
@@ -377,10 +491,7 @@ private fun NewSlot(
                 modifier = Modifier.weight(1f)
             )
 
-            val fromMinutes = parseTimeToMinutes(fromTime)
-            val toMinutes = parseTimeToMinutes(toTime)
-
-            val hasAnyOverlap = slots.any { hasTimeOverlap(it) }
+            val hasAnyOverlap = slots.any { isBlockingOverlap(it) }
             
             val isValid = newSlot.name.isNotBlank() && 
                           fromMinutes != null && 
@@ -433,9 +544,28 @@ private fun NewSlot(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
             ) {
-                
+                if (newSlot.id != 0) {
+                    IconButton(
+                        onClick = onDelete
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.trash),
+                            contentDescription = "Удалить",
+                            tint = Color.Red.copy(alpha = 0.8f)
+                        )
+                    }
+                } else {
+                    Spacer(Modifier.width(0.dp))
+                }
                 IconButton(
-                    onClick = onSave,
+                    onClick = {
+                        val hasWorkOverlap = !newSlot.isWork && slots.any { it.isWork && hasTimeOverlap(it) }
+                        if (hasWorkOverlap) {
+                            showOverlapWarningDialog = true
+                        } else {
+                            onSave()
+                        }
+                    },
                     enabled = isValid
                 ) {
                     Icon(
@@ -443,14 +573,6 @@ private fun NewSlot(
                         contentDescription = null,
                         tint = if (isValid) MaterialTheme.colorScheme.onBackground 
                                else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
-                    )
-                }
-                IconButton(
-                    onClick = onBack
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.close_circle),
-                        contentDescription = null
                     )
                 }
             }

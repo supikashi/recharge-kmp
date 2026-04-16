@@ -2,6 +2,7 @@ package com.supikashi.recharge.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.supikashi.recharge.data.UserPreferencesRepository
 import com.supikashi.recharge.database.Break
 import com.supikashi.recharge.database.TaskDatabase
 import com.supikashi.recharge.notifications.NotificationScheduler
@@ -18,8 +19,10 @@ import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class NotificationViewModel(
     database: TaskDatabase,
+    private val userPreferencesRepository: UserPreferencesRepository,
     private val notificationScheduler: NotificationScheduler
 ) : ViewModel() {
     private val dao = database.taskDao()
@@ -35,24 +38,25 @@ class NotificationViewModel(
     private val _hasNotificationPermission = MutableStateFlow(false)
     val hasNotificationPermission: StateFlow<Boolean> = _hasNotificationPermission.asStateFlow()
 
-    private var previousBreakIds: Set<Int> = emptySet()
+    private var previousBreaks: Set<Break> = emptySet()
     
     init {
         _hasNotificationPermission.value = notificationScheduler.hasPermission()
 
         viewModelScope.launch {
             breaks.collect { currentBreaks ->
-                val currentIds = currentBreaks.map { it.id }.toSet()
-                val hasNewBreaks = currentIds.any { it !in previousBreakIds }
-
-                val deletedIds = previousBreakIds - currentIds
-                if (deletedIds.isNotEmpty()) {
-                    cancelNotifications(deletedIds)
-                }
-
-                previousBreakIds = currentIds
-                if (hasNewBreaks) {
+                println("collect breaks")
+                val currentBreaksSet = currentBreaks.toSet()
+                if (previousBreaks.map { it.id } != currentBreaksSet.map { it.id }) {
+                    println("reschedule breaks")
+                    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                    cancelNotifications(
+                        breaks = currentBreaksSet.plus(previousBreaks)
+                            .filter { it.date >= today }
+                    )
                     scheduleNotifications(currentBreaks)
+                    previousBreaks = currentBreaksSet
                 }
             }
         }
@@ -62,12 +66,17 @@ class NotificationViewModel(
         _hasNotificationPermission.value = granted
     }
 
-    private fun cancelNotifications(breakIds: Set<Int>) {
-        println("🗑️ [NotificationVM] Canceling notifications for ${breakIds.size} deleted breaks: $breakIds")
-        breakIds.forEach { id ->
-            notificationScheduler.cancelNotification(id)
+    private suspend fun cancelNotifications(breaks: List<Break>) {
+        println("🗑️ [NotificationVM] Canceling notifications for ${breaks.size} deleted breaks: ${breaks.map {
+            val timeHours = it.time / 60
+            val timeMinutes = it.time % 60
+            " ${timeHours.toString().padStart(2, '0')}:${timeMinutes.toString().padStart(2, '0')}"
+        }}")
+        breaks.forEach {
+            notificationScheduler.cancelNotification(it.id)
         }
-        println("✅ [NotificationVM] Canceled ${breakIds.size} notifications")
+        dao.resetAllNotificationFlags()
+        println("✅ [NotificationVM] Canceled ${breaks.size} notifications")
     }
 
     @OptIn(ExperimentalTime::class)
@@ -85,35 +94,22 @@ class NotificationViewModel(
         
         println("📅 [NotificationVM] Today: $today, currentTimeMinutes: $currentTimeMinutes")
 
-        val scheduledBreaks = currentBreaks.filter { it.isNotificationScheduled }
-        if (scheduledBreaks.isNotEmpty()) {
-            println("🗑️ [NotificationVM] Canceling ${scheduledBreaks.size} existing notifications")
-            scheduledBreaks.forEach { breakItem ->
-                notificationScheduler.cancelNotification(breakItem.id)
-            }
-        }
-
-        dao.resetAllNotificationFlags()
-
-        val breaksToNotify = dao.getBreaksWithoutNotification(today = today, currentTimeMinutes = currentTimeMinutes, limit = MAX_NOTIFICATIONS)
+        val breaksToNotify = dao.getNextBreaksWithLimit(today = today, currentTimeMinutes = currentTimeMinutes, limit = MAX_NOTIFICATIONS)
         if (breaksToNotify.isEmpty()) {
             println("ℹ️ [NotificationVM] No breaks to notify")
             return
         }
         
         println("📅 [NotificationVM] Scheduling ${breaksToNotify.size} closest breaks")
-
-        val taskIds = breaksToNotify.map { it.taskId }.distinct()
-        val tasks = taskIds.mapNotNull { taskId -> 
-            dao.getTask(taskId)?.let { taskId to it.name }
-        }.toMap()
         
-        breaksToNotify.forEach { breakItem ->
-            val taskName = tasks[breakItem.taskId] ?: "Задача"
+        breaksToNotify.forEachIndexed { index, breakItem ->
             val timeHours = breakItem.time / 60
             val timeMinutes = breakItem.time % 60
-            println("🔔 [NotificationVM] Scheduling: '$taskName' on ${breakItem.date} at ${timeHours.toString().padStart(2, '0')}:${timeMinutes.toString().padStart(2, '0')}")
-            notificationScheduler.scheduleBreakNotification(breakItem.toNotification(taskName))
+            println("🔔 [NotificationVM] Scheduling on ${breakItem.date} at ${timeHours.toString().padStart(2, '0')}:${timeMinutes.toString().padStart(2, '0')}")
+            
+            val isPrimary = index == 0
+            notificationScheduler.scheduleBreakNotification(breakItem.toNotification(isPrimary))
+            
             dao.updateNotificationScheduled(breakItem.id, true)
         }
         

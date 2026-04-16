@@ -4,13 +4,13 @@ import kotlinx.serialization.Serializable
 
 sealed interface Screen {
     @Serializable
-    data object Onboarding : Screen
+    data class Onboarding(val isFromSettings: Boolean = false) : Screen
 
     @Serializable
     data object Home : Screen
 
     @Serializable
-    data object PomodoroSelection : Screen
+    data class PomodoroSelection(val isFromSettings: Boolean = false) : Screen
 
     @Serializable
     data object Schedule : Screen
@@ -32,6 +32,12 @@ sealed interface Screen {
 
     @Serializable
     data class BreakResult(val type: String, val durationMinutes: Int = 0) : Screen
+
+    @Serializable
+    data object Settings : Screen
+
+    @Serializable
+    data class Calendar(val selectedDateEpochDays: Long) : Screen
 }
 
 enum class BreakResultType {

@@ -30,13 +30,7 @@ class HomeViewModel(
     private val _currentBreak = MutableStateFlow<Break?>(null)
     val currentBreak: StateFlow<Break?> = _currentBreak.asStateFlow()
 
-    override fun onCleared() {
-        println("cleared")
-        super.onCleared()
-    }
-
     init {
-        println(helloWorld)
         observeCurrentBreak()
         startTimeUpdateLoop()
     }
@@ -49,18 +43,35 @@ class HomeViewModel(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun startTimeUpdateLoop() {
         viewModelScope.launch {
             while (true) {
-                delay(30_000) 
+                val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                val secondsUntilNextMinute = 60 - now.second
+
+                if (secondsUntilNextMinute == 60) {
+                    delay(1000)
+                } else {
+                    delay(secondsUntilNextMinute * 1000L)
+                }
+
                 val breaks = dao.getAllBreaksSorted()
                 updateCurrentBreak(breaks)
             }
         }
     }
 
+    fun refreshCurrentBreak() {
+        viewModelScope.launch {
+            val breaks = dao.getAllBreaksSorted()
+            updateCurrentBreak(breaks)
+        }
+    }
+
     @OptIn(ExperimentalTime::class)
     private fun updateCurrentBreak(breaks: List<Break>) {
+        println("update")
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val today = now.date
         val currentTimeMinutes = now.hour * 60 + now.minute
@@ -69,15 +80,9 @@ class HomeViewModel(
             breakItem.date == today &&
             !breakItem.isCompleted &&
             breakItem.time <= currentTimeMinutes &&
-            currentTimeMinutes < breakItem.time + 5 
+            currentTimeMinutes < breakItem.time + 10
         }
         
         _currentBreak.value = activeBreak
-    }
-
-    fun resetCounter() {
-        viewModelScope.launch {
-            userPreferencesRepository.resetAllPreferences()
-        }
     }
 }

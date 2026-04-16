@@ -32,6 +32,14 @@ fun formatDate(date: LocalDate): String {
     return "${date.dayOfMonth} ${months[date.monthNumber - 1]}"
 }
 
+fun formatMonth(date: LocalDate): String {
+    val months = listOf(
+        "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+        "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+    )
+    return months[date.monthNumber - 1]
+}
+
 fun formatDayOfWeek(date: LocalDate): String {
     return when (date.dayOfWeek.ordinal) {
         0 -> "Понедельник"

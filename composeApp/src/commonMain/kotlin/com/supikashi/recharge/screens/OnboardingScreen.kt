@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.supikashi.recharge.analytics.AnalyticsLogger
 import com.supikashi.recharge.theme.Background
 import com.supikashi.recharge.theme.Primary
 import com.supikashi.recharge.theme.Secondary
@@ -86,11 +87,16 @@ val onboardingPages = listOf(
 
 @Composable
 fun OnboardingScreen(
-    onNavigateToHome: () -> Unit
+    onNavigateToHome: () -> Unit,
+    isFromSettings: Boolean = false
 ) {
     val viewModel: OnboardingViewModel = koinViewModel()
     val onboardingState by viewModel.onboardingState.collectAsStateWithLifecycle()
     val currentPage by viewModel.currentPage.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.checkOnboardingStatus(isFromSettings)
+    }
 
     LaunchedEffect(onboardingState) {
         if (onboardingState is OnboardingState.NavigateToHome ||
@@ -122,7 +128,10 @@ fun OnboardingScreen(
                 OnboardingContent(
                     currentPage = currentPage,
                     totalPages = viewModel.totalPages,
-                    onNextClick = { viewModel.nextPage() }
+                    onNextClick = {
+                        AnalyticsLogger.logEvent("onboarding_next_clicked", mapOf("page" to currentPage))
+                        viewModel.nextPage()
+                    }
                 )
             }
         }
@@ -196,5 +205,6 @@ private fun OnboardingContent(
                 style = MaterialTheme.typography.bodyMedium
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }

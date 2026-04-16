@@ -2,7 +2,6 @@ package com.supikashi.recharge
 
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -31,13 +30,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             App(
                 taskDao = dao,
-                shouldOpenBreakNotification = shouldOpenBreakNotification
+                shouldOpenBreakNotification = shouldOpenBreakNotification,
+                onBreakNotificationNavigated = {
+                    shouldOpenBreakNotification = false
+                }
             )
         }
     }
     
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
         handleIntent(intent)
     }
     

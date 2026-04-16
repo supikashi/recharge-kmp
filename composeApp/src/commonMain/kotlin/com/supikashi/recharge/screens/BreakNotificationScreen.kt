@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.supikashi.recharge.analytics.AnalyticsLogger
 import com.supikashi.recharge.components.TopBar
 import com.supikashi.recharge.database.Task
 import com.supikashi.recharge.theme.AppTheme
@@ -62,6 +63,7 @@ fun BreakNotificationScreen(
                 rightIcon = Res.drawable.home,
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
+            //Text(text = "${(currentBreak?.time ?: 0) / 60} ${(currentBreak?.time ?: 0) % 60}")
             Spacer(Modifier.height(20.dp))
             Column(
                 modifier = Modifier
@@ -84,30 +86,27 @@ fun BreakNotificationScreen(
 
                         Text(
                             text = "Этот перерыв уже прошел",
-                            style = MaterialTheme.typography.headlineLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 32.sp
-                            ),
+                            style = MaterialTheme.typography.titleMedium,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(bottom = 40.dp)
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
 
                         Button(
-                            onClick = onNavigateToRest,
+                            onClick = {
+                                AnalyticsLogger.logEvent("break_notification_missed_rest_clicked")
+                                onNavigateToRest()
+                            },
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(60.dp),
-                            shape = RoundedCornerShape(15.dp),
+                                .fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
+                                containerColor = MaterialTheme.colorScheme.onBackground,
                                 contentColor = MaterialTheme.colorScheme.background
                             )
                         ) {
                             Text(
                                 text = "Начать отдыхать",
-                                style = MaterialTheme.typography.titleLarge
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
 
@@ -124,6 +123,7 @@ fun BreakNotificationScreen(
 
                         Button(
                             onClick = {
+                                AnalyticsLogger.logEvent("break_notification_start_rest_clicked")
                                 viewModel.markBreakCompleted()
                                 val duration = breakDuration
                                 onNavigateToBreakResult("STARTED", duration)
@@ -144,6 +144,7 @@ fun BreakNotificationScreen(
 
                         Button(
                             onClick = {
+                                AnalyticsLogger.logEvent("break_notification_postpone_clicked")
                                 viewModel.postponeBreak()
                                 onNavigateToBreakResult("POSTPONED", 0)
                             },
@@ -162,6 +163,7 @@ fun BreakNotificationScreen(
 
                         Button(
                             onClick = {
+                                AnalyticsLogger.logEvent("break_notification_cancel_clicked")
                                 onNavigateToBreakResult("CANCELLED", 0)
                             },
                             modifier = Modifier
