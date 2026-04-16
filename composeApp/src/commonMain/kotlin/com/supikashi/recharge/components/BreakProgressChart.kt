@@ -87,7 +87,7 @@ fun BreakProgressChart(
 
             Text(
                 text = "${(animatedProgress.value * 100).toInt()}%",
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
             )

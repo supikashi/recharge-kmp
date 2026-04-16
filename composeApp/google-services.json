@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "54555389877",
+    "project_id": "break-lab",
+    "storage_bucket": "break-lab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54555389877:android:c0d3d7ec4381d8d2ae73fc",
+        "android_client_info": {
+          "package_name": "com.supikashi.BreakLab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArbhlDMXQIM3EdawDtmf0Sdeir5nf0su4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

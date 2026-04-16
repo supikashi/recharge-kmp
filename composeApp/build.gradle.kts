@@ -9,6 +9,7 @@ plugins {
     kotlin("plugin.serialization") version "2.2.21"
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.googleServices)
 }
 
 kotlin {
@@ -30,6 +31,7 @@ kotlin {
     
     sourceSets {
         androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
@@ -40,7 +42,8 @@ kotlin {
             implementation(libs.androidx.work.runtime)
         }
         commonMain.dependencies {
-            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.1")
+            implementation(libs.gitlive.firebase.analytics)
+            implementation(libs.navigation.compose)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -76,7 +79,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.supikashi.recharge"
+        applicationId = "com.supikashi.BreakLab"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -90,6 +93,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

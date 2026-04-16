@@ -1,6 +1,7 @@
 import SwiftUI
 import UserNotifications
 import ComposeApp
+import FirebaseCore
 
 @main
 struct iOSApp: App {
@@ -15,6 +16,7 @@ struct iOSApp: App {
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
         // Устанавливаем делегат для обработки уведомлений
         UNUserNotificationCenter.current().delegate = self
         return true
@@ -23,7 +25,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     // Обработка нажатия на уведомление когда приложение в фоне или закрыто
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         // Устанавливаем флаг для открытия экрана перерыва
-        MainViewControllerKt.shouldOpenBreakNotificationScreen = true
+        let userInfo = response.notification.request.content.userInfo
+        let isStartNotification = userInfo["is_start_notification"] as? Bool ?? false
+        
+        if isStartNotification {
+            MainViewControllerKt.shouldOpenBreakNotificationScreen = true
+        }
         completionHandler()
     }
     

@@ -7,7 +7,7 @@ enum class PomodoroType(
 ) {
     DEBUG(
         workMinutes = 2,
-        restMinutes = 1,
+        restMinutes = 3,
         displayName = "Классический (25/5)"
     ),
     CLASSIC(
@@ -28,7 +28,6 @@ enum class PomodoroType(
 
     companion object {
         fun fromOrdinal(ordinal: Int): PomodoroType? {
-            println("fromOrdinal ${ordinal} ${entries}")
             return entries.getOrNull(ordinal)
         }
     }

@@ -4,7 +4,7 @@ import com.supikashi.recharge.database.Break
 import com.supikashi.recharge.database.Task
 import com.supikashi.recharge.models.PomodoroType
 
-fun calculateBreaksForTask(task: Task, pomodoroType: PomodoroType): List<Break> {
+fun calculateBreaksForTask(task: Task, pomodoroType: PomodoroType, startFromTime: Int? = null): List<Break> {
     if (!task.isSplittable) {
         return emptyList()
     }
@@ -16,7 +16,7 @@ fun calculateBreaksForTask(task: Task, pomodoroType: PomodoroType): List<Break> 
     }
     
     val breaks = mutableListOf<Break>()
-    var currentTime = task.startTime + pomodoroType.workMinutes
+    var currentTime = (startFromTime ?: task.startTime) + pomodoroType.workMinutes
 
     while (currentTime + pomodoroType.restMinutes <= task.endTime) {
         breaks.add(
