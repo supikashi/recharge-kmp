@@ -263,13 +263,13 @@ private fun ActivityCard(
     activity: RestActivity,
     modifier: Modifier = Modifier
 ) {
-    // Stores the target rotation index (e.g., 0, 1, 2...)
+    
     var rotationIndex by remember(activity) { mutableStateOf(0) }
-    // Maps a rotation index to a specific content step index.
-    // This allows us to map arbitrary rotations (like flipping back 3->2) to specific content logic (Step 3 -> Step 0).
+    
+    
     var stepMap by remember(activity) { mutableStateOf(mapOf(0 to 0)) }
 
-    // Animate rotation based on the rotation index.
+    
     val rotation by animateFloatAsState(
         targetValue = rotationIndex * 180f,
         animationSpec = tween(500)
@@ -289,19 +289,19 @@ private fun ActivityCard(
             contentColor = MaterialTheme.colorScheme.onBackground,
         )
     ) {
-        // Determine if we are showing the "back" of the card physically.
+        
         val normalizedRotation = (rotation.absoluteValue % 360)
         val isShowingBack = normalizedRotation > 90f && normalizedRotation < 270f
 
-        // Calculate the current rotation index based on physical rotation.
-        // This index changes exactly at the 90-degree mark of a flip.
+        
+        
         val currentRotIndex = ((rotation + 90f) / 180f).toInt()
 
-        // Retrieve the logical content step for this rotation index.
+        
         val visibleStepIndex = stepMap[currentRotIndex] ?: 0
         val content = activity.steps.getOrElse(visibleStepIndex) { activity.steps[0] }
 
-        // Counter-rotate content if on the back face so it's readable.
+        
         val contentRotationY = if (isShowingBack) 180f else 0f
 
         Box(
@@ -348,9 +348,9 @@ private fun ActivityCard(
                 }
             } else null
 
-            val headerText = //if (isStart)
+            val headerText = 
                 "ДЛИТЕЛЬНОСТЬ: ${activity.durationMin}-${activity.durationMax} минут"
-            //else null
+            
 
             CardStepContent(
                 content = content,

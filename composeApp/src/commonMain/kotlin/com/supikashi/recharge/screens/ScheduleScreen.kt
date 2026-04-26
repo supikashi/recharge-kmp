@@ -2,6 +2,7 @@ package com.supikashi.recharge.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,6 +59,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.supikashi.recharge.analytics.AnalyticsLogger
@@ -188,7 +190,7 @@ fun ScheduleScreen(
                 }
             }
 
-            Column(
+            Box(
                 modifier = Modifier
                     .clip(
                         RoundedCornerShape(
@@ -198,14 +200,14 @@ fun ScheduleScreen(
                     )
                     .background(MaterialTheme.colorScheme.background)
                     .fillMaxWidth()
-                    .padding(vertical = 40.dp, horizontal = 20.dp)
+                    
                     .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.Bottom),
-                horizontalAlignment = Alignment.CenterHorizontally,
+
+
             ) {
                 if (isSlotCard) {
                     NewSlot(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.align(Alignment.Center).padding(horizontal = 20.dp),
                         slots = filteredTasks?.map { it.task } ?: emptyList(),
                         newSlot = newSlot,
                         onChange = { newSlot = it },
@@ -229,25 +231,33 @@ fun ScheduleScreen(
                     )
                 } else {
                     if (filteredTasks == null) {
-                        // Показываем загрузку или ничего, чтобы избежать моргания
-                        Spacer(modifier = Modifier.weight(1f))
+                        
+                        Spacer(modifier = Modifier.fillMaxSize())
                     } else if (filteredTasks!!.isEmpty()) {
-                        Text(
-                            text = "В расписании на этот день пока\nничего нет, давай его дополним",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Icon(
-                            painter = painterResource(Res.drawable.mascot),
-                            contentDescription = null,
-                            tint = Color.Unspecified,
-                        )
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            verticalArrangement = Arrangement.spacedBy(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "В расписании на этот день пока\nничего нет, давай его дополним",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Icon(
+                                painter = painterResource(Res.drawable.mascot),
+                                contentDescription = null,
+                                tint = Color.Unspecified,
+                            )
+                        }
                     } else {
                         Column(
                             modifier = Modifier
-                                .weight(1f)
+                                .fillMaxSize()
+                                .padding(horizontal = 20.dp)
                                 .verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(5.dp)
+                            verticalArrangement = Arrangement.spacedBy(5.dp),
                         ) {
+                            Spacer(Modifier.height(35.dp))
                             filteredTasks!!.forEach { slot ->
                                 key(slot.task.id) {
                                     TaskCard(
@@ -262,6 +272,7 @@ fun ScheduleScreen(
                                     )
                                 }
                             }
+                            Spacer(Modifier.height(110.dp))
                         }
                     }
                     Button(
@@ -269,6 +280,7 @@ fun ScheduleScreen(
                             AnalyticsLogger.logEvent("schedule_add_task_clicked")
                             isSlotCard = true
                         },
+                        modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp),
                         colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground)
                     ) {
                         Text(
@@ -326,258 +338,276 @@ private fun NewSlot(
     }
     
     val focusManager = LocalFocusManager.current
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(30.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = MaterialTheme.colorScheme.onBackground
-        )
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState()),
     ) {
-        Column(
-            modifier = Modifier
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = { focusManager.clearFocus() })
-                }
-                .padding(vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+        Spacer(Modifier.height(40.dp))
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(30.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onBackground
+            )
         ) {
-            Box(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(
-                    onClick = onBack,
-                    modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.close_circle),
-                        contentDescription = "Назад",
-                    )
-                }
-                Text(
-                    text = if (newSlot.id == 0) "Новый слот" else "Редактирование",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            if (slots.isNotEmpty()) {
-                LazyRow(
-                    modifier = Modifier,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp)
-                ) {
-                    items(slots) { slot ->
-                        val hasOverlap = isBlockingOverlap(slot)
-                        Box(
-                            modifier = Modifier
-                                .height(20.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(
-                                    if (hasOverlap) Color.Red.copy(alpha = 0.7f)
-                                    else MaterialTheme.colorScheme.tertiary
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "${slot.name} " +
-                                        "${formatMinutesToTime(slot.startTime)}-" +
-                                        "${formatMinutesToTime(slot.endTime)}",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = if (hasOverlap) Color.White else MaterialTheme.colorScheme.onBackground,
-                                modifier = Modifier.padding(horizontal = 5.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
-            WorkRestSwitch(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                isWork = newSlot.isWork,
-                onChanged = {
-                    onChange(newSlot.copy(
-                        isWork = it,
-                        isSplittable = if (it) newSlot.isSplittable else false
-                    ))
-                }
-            )
-
-            BasicTextField(
-                value = newSlot.name,
-                onValueChange = { onChange(newSlot.copy(name = it)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Next) }
-                ),
-                textStyle = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Start
-                ),
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-                    .height(40.dp)
-                    .background(Color(0xFFE8E8E8), RoundedCornerShape(20.dp)),
-                decorationBox = { innerTextField ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 20.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (newSlot.name.isEmpty()) {
-                            Text(
-                                text = "Название задачи",
-                                style = LocalTextStyle.current.copy(
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                                    textAlign = TextAlign.Start
-                                )
-                            )
-                        }
-                        innerTextField()
-                    }
-                }
-            )
-
-
-            TimeRangeInputManual(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                from = fromTime,
-                to = toTime,
-                onFromTimeChanged = { 
-                    fromTime = it
-                    parseTimeToMinutes(it)?.let { minutes ->
-                        onChange(newSlot.copy(startTime = minutes))
-                    }
-                },
-                onToTimeChanged = { 
-                    toTime = it
-                    parseTimeToMinutes(it)?.let { minutes ->
-                        onChange(newSlot.copy(endTime = minutes))
-                    }
-                },
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
+                    .padding(vertical = 20.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = { focusManager.clearFocus() })
+                    },
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                Text(
-                    text = "Можно встроить перерыв",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Checkbox(
-                    checked = newSlot.isSplittable,
-                    onCheckedChange = { onChange(newSlot.copy(isSplittable = it)) },
-                    enabled = newSlot.isWork,
-                    colors = CheckboxDefaults.colors().copy(
-                        checkedCheckmarkColor = MaterialTheme.colorScheme.onBackground,
-                        uncheckedCheckmarkColor = Color.Transparent,
-                        checkedBoxColor = Color.Transparent,
-                        uncheckedBoxColor = Color.Transparent,
-                        checkedBorderColor = MaterialTheme.colorScheme.onBackground,
-                        uncheckedBorderColor = MaterialTheme.colorScheme.onBackground,
-                        disabledCheckedBoxColor = Color.Transparent,
-                        disabledUncheckedBoxColor = Color.Transparent,
-                        disabledBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
-                    )
-                )
-            }
-            Spacer(
-                modifier = Modifier.weight(1f)
-            )
-
-            val hasAnyOverlap = slots.any { isBlockingOverlap(it) }
-            
-            val isValid = newSlot.name.isNotBlank() && 
-                          fromMinutes != null && 
-                          toMinutes != null &&
-                          fromMinutes < toMinutes &&
-                          !hasAnyOverlap
-
-            val hasAnyInput = newSlot.name.isNotBlank() && fromTime.length == 5 && toTime.length == 5
-            
-            if (hasAnyInput && !isValid) {
-                val errors = buildList {
-                    if (newSlot.name.isBlank()) {
-                        add("Введите название задачи")
-                    }
-                    if (fromMinutes == null && fromTime.isNotBlank()) {
-                        add("Некорректное время начала")
-                    } else if (fromMinutes == null) {
-                        add("Укажите время начала")
-                    }
-                    if (toMinutes == null && toTime.isNotBlank()) {
-                        add("Некорректное время окончания")
-                    } else if (toMinutes == null) {
-                        add("Укажите время окончания")
-                    }
-                    if (fromMinutes != null && toMinutes != null && fromMinutes >= toMinutes) {
-                        add("Время начала должно быть раньше времени окончания")
-                    }
-                    if (fromMinutes != null && toMinutes != null && fromMinutes < toMinutes && hasAnyOverlap) {
-                        add("Задача пересекается с другими задачами")
-                    }
-                }
-                
-                Column(
+                Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    errors.forEach { error ->
-                        Text(
-                            text = error,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color.Red.copy(alpha = 0.8f),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-            }
-            
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
-            ) {
-                if (newSlot.id != 0) {
                     IconButton(
-                        onClick = onDelete
+                        onClick = onBack,
+                        modifier = Modifier
                     ) {
                         Icon(
-                            painter = painterResource(Res.drawable.trash),
-                            contentDescription = "Удалить",
-                            tint = Color.Red.copy(alpha = 0.8f)
+                            painter = painterResource(Res.drawable.close_circle),
+                            contentDescription = "Назад",
                         )
                     }
-                } else {
-                    Spacer(Modifier.width(0.dp))
+                    Text(
+                        text = if (newSlot.id == 0) "Новый слот" else "Редактирование",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    IconButton(
+                        onClick = {  },
+                        modifier = Modifier,
+                        enabled = false
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.close_circle),
+                            contentDescription = "Назад",
+                            tint = Color.Transparent
+                        )
+                    }
                 }
-                IconButton(
-                    onClick = {
-                        val hasWorkOverlap = !newSlot.isWork && slots.any { it.isWork && hasTimeOverlap(it) }
-                        if (hasWorkOverlap) {
-                            showOverlapWarningDialog = true
-                        } else {
-                            onSave()
+
+                if (slots.isNotEmpty()) {
+                    LazyRow(
+                        modifier = Modifier,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp)
+                    ) {
+                        items(slots) { slot ->
+                            val hasOverlap = isBlockingOverlap(slot)
+                            Box(
+                                modifier = Modifier
+                                    .height(20.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(
+                                        if (hasOverlap) Color.Red.copy(alpha = 0.7f)
+                                        else MaterialTheme.colorScheme.tertiary
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "${slot.name} " +
+                                            "${formatMinutesToTime(slot.startTime)}-" +
+                                            "${formatMinutesToTime(slot.endTime)}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = if (hasOverlap) Color.White else MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.padding(horizontal = 5.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                WorkRestSwitch(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    isWork = newSlot.isWork,
+                    onChanged = {
+                        onChange(newSlot.copy(
+                            isWork = it,
+                            isSplittable = if (it) newSlot.isSplittable else false
+                        ))
+                    }
+                )
+
+                BasicTextField(
+                    value = newSlot.name,
+                    onValueChange = { onChange(newSlot.copy(name = it)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Next) }
+                    ),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Start
+                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .background(Color(0xFFE8E8E8), RoundedCornerShape(20.dp)),
+                    decorationBox = { innerTextField ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 20.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            if (newSlot.name.isEmpty()) {
+                                Text(
+                                    text = "Название задачи",
+                                    style = LocalTextStyle.current.copy(
+                                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                                        textAlign = TextAlign.Start
+                                    )
+                                )
+                            }
+                            innerTextField()
+                        }
+                    }
+                )
+
+
+                TimeRangeInputManual(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    from = fromTime,
+                    to = toTime,
+                    onFromTimeChanged = {
+                        fromTime = it
+                        parseTimeToMinutes(it)?.let { minutes ->
+                            onChange(newSlot.copy(startTime = minutes))
                         }
                     },
-                    enabled = isValid
+                    onToTimeChanged = {
+                        toTime = it
+                        parseTimeToMinutes(it)?.let { minutes ->
+                            onChange(newSlot.copy(endTime = minutes))
+                        }
+                    },
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
                 ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.tick_circle),
-                        contentDescription = null,
-                        tint = if (isValid) MaterialTheme.colorScheme.onBackground 
-                               else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                    Text(
+                        text = "Можно встроить перерыв",
+                        style = MaterialTheme.typography.bodyMedium
                     )
+                    Checkbox(
+                        checked = newSlot.isSplittable,
+                        onCheckedChange = { onChange(newSlot.copy(isSplittable = it)) },
+                        enabled = newSlot.isWork,
+                        colors = CheckboxDefaults.colors().copy(
+                            checkedCheckmarkColor = MaterialTheme.colorScheme.onBackground,
+                            uncheckedCheckmarkColor = Color.Transparent,
+                            checkedBoxColor = Color.Transparent,
+                            uncheckedBoxColor = Color.Transparent,
+                            checkedBorderColor = MaterialTheme.colorScheme.onBackground,
+                            uncheckedBorderColor = MaterialTheme.colorScheme.onBackground,
+                            disabledCheckedBoxColor = Color.Transparent,
+                            disabledUncheckedBoxColor = Color.Transparent,
+                            disabledBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                        )
+                    )
+                }
+
+                val hasAnyOverlap = slots.any { isBlockingOverlap(it) }
+
+                val isValid = newSlot.name.isNotBlank() &&
+                        fromMinutes != null &&
+                        toMinutes != null &&
+                        fromMinutes < toMinutes &&
+                        !hasAnyOverlap
+
+                val hasAnyInput = newSlot.name.isNotBlank() && fromTime.length == 5 && toTime.length == 5
+
+                if (hasAnyInput && !isValid) {
+                    val errors = buildList {
+                        if (newSlot.name.isBlank()) {
+                            add("Введите название задачи")
+                        }
+                        if (fromMinutes == null && fromTime.isNotBlank()) {
+                            add("Некорректное время начала")
+                        } else if (fromMinutes == null) {
+                            add("Укажите время начала")
+                        }
+                        if (toMinutes == null && toTime.isNotBlank()) {
+                            add("Некорректное время окончания")
+                        } else if (toMinutes == null) {
+                            add("Укажите время окончания")
+                        }
+                        if (fromMinutes != null && toMinutes != null && fromMinutes >= toMinutes) {
+                            add("Время начала должно быть раньше времени окончания")
+                        }
+                        if (fromMinutes != null && toMinutes != null && fromMinutes < toMinutes && hasAnyOverlap) {
+                            add("Задача пересекается с другими задачами")
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        errors.forEach { error ->
+                            Text(
+                                text = error,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color.Red.copy(alpha = 0.8f),
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+                ) {
+                    if (newSlot.id != 0) {
+                        IconButton(
+                            onClick = onDelete
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.drawable.trash),
+                                contentDescription = "Удалить",
+                                tint = Color.Red.copy(alpha = 0.8f)
+                            )
+                        }
+                    } else {
+                        Spacer(Modifier.width(0.dp))
+                    }
+                    IconButton(
+                        onClick = {
+                            val hasWorkOverlap = !newSlot.isWork && slots.any { it.isWork && hasTimeOverlap(it) }
+                            if (hasWorkOverlap) {
+                                showOverlapWarningDialog = true
+                            } else {
+                                onSave()
+                            }
+                        },
+                        enabled = isValid
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.tick_circle),
+                            contentDescription = null,
+                            tint = if (isValid) MaterialTheme.colorScheme.onBackground
+                            else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                        )
+                    }
                 }
             }
         }
-
+        Spacer(Modifier.height(40.dp))
     }
 }
 

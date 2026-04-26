@@ -140,4 +140,10 @@ interface TaskDao {
             insertBreaks(newBreaks)
         }
     }
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMoodRecord(record: MoodRecord)
+
+    @Query("SELECT * FROM MoodRecord WHERE date >= :startDate AND date <= :endDate ORDER BY date ASC, timeMinutes ASC")
+    fun getMoodRecordsByDateRange(startDate: kotlinx.datetime.LocalDate, endDate: kotlinx.datetime.LocalDate): Flow<List<MoodRecord>>
 }

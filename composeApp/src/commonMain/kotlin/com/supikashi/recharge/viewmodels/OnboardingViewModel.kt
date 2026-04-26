@@ -34,8 +34,8 @@ class OnboardingViewModel(
     fun checkOnboardingStatus(isFromSettings: Boolean = false) {
         viewModelScope.launch {
             if (isFromSettings) {
-                // If coming from settings, we just show the onboarding
-                // and resetting current page to 0 is handled by default
+                
+                
                 _onboardingState.value = OnboardingState.ShowOnboarding
                 return@launch
             }

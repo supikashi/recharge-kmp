@@ -148,14 +148,14 @@ private fun PomodoroTypeItem(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.graphicsLayer {
                 val alphaVal = descriptionAlpha()
-                // Точное центрирование: сдвигаем текст ровно на половину высоты скрываемого блока
-                // (высота текста + 8.dp padding)
+                
+                
                 translationY = (1f - alphaVal) * (descriptionHeight / 2f + 4.dp.toPx())
             }
         ) {
             Text(
                 text = when (type) {
-                    PomodoroType.DEBUG -> "Debug"
+                    PomodoroType.DEBUG -> "Test Pomodoro"
                     PomodoroType.CLASSIC -> "Pomodoro 25/5"
                     PomodoroType.EXTENDED -> "Pomodoro 52/17"
                     PomodoroType.DEEP_WORK -> "Pomodoro 90/30"

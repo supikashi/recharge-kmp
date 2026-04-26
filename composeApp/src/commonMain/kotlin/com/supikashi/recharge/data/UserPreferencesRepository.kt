@@ -5,18 +5,39 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import com.supikashi.recharge.models.PomodoroType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class UserPreferencesRepository(
     private val dataStore: DataStore<Preferences>
 ) {
     companion object {
+        private const val TWO_DAYS_MILLIS = 2L * 24 * 60 * 60 * 1000
         private val CLICK_COUNTER_KEY = intPreferencesKey("click_counter")
         private val FIRST_SCHEDULE_VISIT_KEY = booleanPreferencesKey("first_schedule_visit")
+        private val FIRST_LAUNCH_EPOCH_MILLIS_KEY = longPreferencesKey("first_launch_epoch_millis")
         private val SELECTED_POMODORO_TYPE_KEY = intPreferencesKey("selected_pomodoro_type")
         private val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_completed")
+    }
+
+    @OptIn(ExperimentalTime::class)
+    val shouldShowHomeSurvey: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            val firstLaunchMillis = preferences[FIRST_LAUNCH_EPOCH_MILLIS_KEY] ?: return@map false
+            Clock.System.now().toEpochMilliseconds() - firstLaunchMillis >= TWO_DAYS_MILLIS
+        }
+
+    @OptIn(ExperimentalTime::class)
+    suspend fun ensureFirstLaunchTimestamp() {
+        dataStore.edit { preferences ->
+            if (preferences[FIRST_LAUNCH_EPOCH_MILLIS_KEY] == null) {
+                preferences[FIRST_LAUNCH_EPOCH_MILLIS_KEY] = Clock.System.now().toEpochMilliseconds()
+            }
+        }
     }
 
     val isFirstScheduleVisit: Flow<Boolean> = dataStore.data
@@ -78,6 +99,7 @@ class UserPreferencesRepository(
         dataStore.edit { preferences ->
             preferences[CLICK_COUNTER_KEY] = 0
             preferences[FIRST_SCHEDULE_VISIT_KEY] = true
+            preferences.remove(FIRST_LAUNCH_EPOCH_MILLIS_KEY)
             preferences.remove(SELECTED_POMODORO_TYPE_KEY)
             preferences.remove(ONBOARDING_COMPLETED_KEY)
         }

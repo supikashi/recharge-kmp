@@ -13,8 +13,8 @@ import kotlinx.datetime.LocalDate
 import kotlin.jvm.JvmStatic
 
 @Database(
-    entities = [Task::class, Break::class],
-    version = 1
+    entities = [Task::class, Break::class, MoodRecord::class],
+    version = 2
 )
 @TypeConverters(Converters::class)
 @ConstructedBy(TaskDatabaseConstructor::class)

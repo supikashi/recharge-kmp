@@ -55,7 +55,7 @@ fun Break.toNotification(isPrimary: Boolean = false): BreakNotification {
 
 fun Break.toEndNotification(duration: Int): BreakNotification {
     return BreakNotification(
-        id = -id, // Use negative ID to distinguish from start notification
+        id = -id, 
         taskId = taskId,
         title = "Перерыв окончен!",
         message = "Пора возвращаться к задачам",

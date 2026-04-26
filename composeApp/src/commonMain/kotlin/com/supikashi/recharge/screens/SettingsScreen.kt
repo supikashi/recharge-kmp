@@ -107,13 +107,13 @@ fun SettingsScreen(
                         }
                     )
 
-                    SettingsButton(
-                        text = "Сброс данных",
-                        onClick = {
-                            AnalyticsLogger.logEvent("settings_reset_data_clicked")
-                            viewModel.resetAllPreferences()
-                        }
-                    )
+
+
+
+
+
+
+
                 }
             }
         }

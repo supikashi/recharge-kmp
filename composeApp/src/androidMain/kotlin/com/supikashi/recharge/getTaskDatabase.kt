@@ -11,5 +11,5 @@ fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<TaskDatabase> {
     return Room.databaseBuilder<TaskDatabase>(
         context = appContext,
         name = dbFile.absolutePath
-    )
+    ).fallbackToDestructiveMigration(true)
 }

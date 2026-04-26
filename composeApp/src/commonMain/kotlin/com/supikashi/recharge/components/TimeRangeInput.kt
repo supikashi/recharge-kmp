@@ -66,7 +66,7 @@ private fun TimeColumn(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    // Format the text to always display as HH:MM if valid, or --:-- otherwise
+    
     val displayTime = remember(timeString) {
         val digits = timeString.filter { it.isDigit() }
         if (digits.length >= 4) {

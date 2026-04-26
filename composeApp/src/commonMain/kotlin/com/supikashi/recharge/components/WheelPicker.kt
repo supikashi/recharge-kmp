@@ -23,7 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -34,8 +36,18 @@ fun WheelPicker(
     listState: LazyListState,
     modifier: Modifier = Modifier,
     visibleItemsCount: Int = 3,
-    itemHeight: Dp = 40.dp,
+    verticalPadding: Dp = 2.dp,
 ) {
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val textStyle = MaterialTheme.typography.headlineMedium
+    
+    val itemHeight = remember(density, textStyle, items, verticalPadding) {
+        val sampleText = items.maxByOrNull { it.length } ?: "00"
+        val heightPx = textMeasurer.measure(text = sampleText, style = textStyle).size.height
+        with(density) { heightPx.toDp() + verticalPadding * 2 }
+    }
+
     val halfVisibleItems = visibleItemsCount / 2
     val flingBehavior = rememberSnapFlingBehavior(lazyListState = listState)
 

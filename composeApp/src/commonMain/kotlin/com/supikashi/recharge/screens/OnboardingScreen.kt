@@ -176,7 +176,8 @@ private fun OnboardingContent(
         Icon(
             painter = painterResource(page.image),
             contentDescription = null,
-            tint = Color.Unspecified
+            tint = Color.Unspecified,
+            modifier = Modifier.weight(1f)
         )
 
         Spacer(modifier = Modifier.height(40.dp))

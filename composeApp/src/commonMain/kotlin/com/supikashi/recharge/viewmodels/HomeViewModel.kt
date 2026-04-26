@@ -27,10 +27,29 @@ class HomeViewModel(
     val isFirstScheduleVisit: StateFlow<Boolean> = userPreferencesRepository.isFirstScheduleVisit
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
+    val shouldShowHomeSurvey: StateFlow<Boolean> = userPreferencesRepository.shouldShowHomeSurvey
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     private val _currentBreak = MutableStateFlow<Break?>(null)
     val currentBreak: StateFlow<Break?> = _currentBreak.asStateFlow()
 
+    @OptIn(ExperimentalTime::class)
+    fun saveMood(value: Int) {
+        viewModelScope.launch {
+            val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            val timeMinutes = now.hour * 60 + now.minute
+            dao.insertMoodRecord(com.supikashi.recharge.database.MoodRecord(
+                date = now.date,
+                timeMinutes = timeMinutes,
+                value = value
+            ))
+        }
+    }
+
     init {
+        viewModelScope.launch {
+            userPreferencesRepository.ensureFirstLaunchTimestamp()
+        }
         observeCurrentBreak()
         startTimeUpdateLoop()
     }

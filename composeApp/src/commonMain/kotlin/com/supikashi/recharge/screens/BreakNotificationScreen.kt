@@ -63,7 +63,7 @@ fun BreakNotificationScreen(
                 rightIcon = Res.drawable.home,
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
-            //Text(text = "${(currentBreak?.time ?: 0) / 60} ${(currentBreak?.time ?: 0) % 60}")
+            
             Spacer(Modifier.height(20.dp))
             Column(
                 modifier = Modifier

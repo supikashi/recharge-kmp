@@ -169,11 +169,11 @@ actual class NotificationScheduler(
     }
     
     actual fun cancelNotificationsForTask(taskId: Int) {
-        // Not used/fully supported with purely AlarmManager without DB map, 
-        // fallback to canceling explicitly via break IDs, which our app does elsewhere.
+        
+        
     }
     
     actual fun cancelAllNotifications() {
-        // Handled via reset in view models when needed.
+        
     }
 }

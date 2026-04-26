@@ -1,5 +1,6 @@
 package com.supikashi.recharge.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
@@ -144,18 +146,9 @@ private fun RestTypeItem(
 
             Text(
                 text = when (type) {
-                    RestType.CALM -> "Этот вид отдыха вероятнее всего подойдет тебе, если ты:\n" +
-                            "\n" +
-                            "Перегружен информацией и хочешь освободить свои мысли\n\n" +
-                            "Испытываешь стресс\nили беспокойство"
-                    RestType.ACTIVE -> "Этот вид отдыха вероятнее всего подойдет тебе, если ты:\n" +
-                            "\n" +
-                            "Занят «сидячей» работой, после которой  затекают мышцы\n\n" +
-                            "Хочешь немного\nвзбодриться"
-                    RestType.CREATIVE -> "Этот вид отдыха вероятнее всего подойдет тебе, если ты:\n" +
-                            "\n" +
-                            "Мечтаешь и фантазируешь, не зная куда деть свои идеи\n\n" +
-                            "Хочешь развить\nкреативность"
+                    RestType.CALM -> "Если испытываешь стресс или беспокойство"
+                    RestType.ACTIVE -> "Если хочешь немного взбодриться"
+                    RestType.CREATIVE -> "Если мечтаешь и фантазируешь, не зная куда деть свои идеи"
                 },
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
@@ -166,6 +159,7 @@ private fun RestTypeItem(
                         }
                     }
                     .padding(top = 8.dp)
+                    .padding(horizontal = 16.dp)
                     .graphicsLayer {
                         val a = descriptionAlpha()
                         alpha = a * a

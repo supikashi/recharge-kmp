@@ -55,7 +55,7 @@ fun <T> CircularCarousel(
         val availableHeight = maxHeight - padding * 2
         
         val aspectRatio = 0.535f
-        // Ensure sizes are valid correctly bounds within constraints
+        
         val targetWidth = androidx.compose.ui.unit.min(availableWidth, availableHeight * aspectRatio)
         val targetHeight = targetWidth / aspectRatio
 

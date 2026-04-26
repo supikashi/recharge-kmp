@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -66,11 +67,16 @@ import recharge.composeapp.generated.resources.home
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import com.supikashi.recharge.components.MoodBarChart
+import com.supikashi.recharge.components.SurveyDialog
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun StatisticsScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToSchedule: (LocalDate) -> Unit, //
+    onNavigateToSchedule: (LocalDate) -> Unit, 
     calendarResult: LocalDate? = null,
     onNavigateToCalendar: (LocalDate) -> Unit = {},
     viewModel: StatisticsViewModel = koinViewModel()
@@ -81,7 +87,8 @@ fun StatisticsScreen(
     )
 
     var selectedDate by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf(Clock.System.todayIn(TimeZone.currentSystemDefault())) }
-    
+    var showSurveyDialog by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(selectedDate) {
         viewModel.setSelectedDate(selectedDate)
     }
@@ -93,8 +100,18 @@ fun StatisticsScreen(
     }
     
     val dailyStats by viewModel.dailyStats.collectAsStateWithLifecycle()
+    val dailyMoodStats by viewModel.dailyMoodStats.collectAsStateWithLifecycle()
     
     Scaffold { paddingValues ->
+        if (showSurveyDialog) {
+            SurveyDialog(
+                onDismiss = { showSurveyDialog = false },
+                onSubmit = {
+                    viewModel.saveMood(it)
+                    showSurveyDialog = false
+                }
+            )
+        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.background(MaterialTheme.colorScheme.mascotPrimary)
@@ -116,6 +133,24 @@ fun StatisticsScreen(
 
             Spacer(Modifier.height(20.dp))
 
+            Button(
+                onClick = {
+                    showSurveyDialog = true
+                },
+                colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .heightIn(min = 40.dp)
+            ) {
+                Text(
+                    text = "Сделать запись о самочувствии",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            Spacer(Modifier.height(20.dp))
+
             Column(
                 modifier = Modifier
                     .clip(
@@ -126,8 +161,9 @@ fun StatisticsScreen(
                     )
                     .background(MaterialTheme.colorScheme.background)
                     .fillMaxWidth()
-                    .padding(20.dp)
-                    .weight(1f),
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -170,45 +206,87 @@ fun StatisticsScreen(
 
                 Spacer(Modifier.height(10.dp))
 
-                if (dailyStats.totalBreaks == 0) {
-                    Spacer(Modifier.height(30.dp))
-                    
-                    Text(
-                        text = "Пришло время настроить расписание отдыха!",
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center
-                    )
-                    
-                    Spacer(Modifier.height(40.dp))
-                    
-                    Button(
-                        colors = ButtonDefaults.buttonColors().copy(
-                            contentColor = MaterialTheme.colorScheme.background,
-                            containerColor = MaterialTheme.colorScheme.onBackground
-                        ),
-                        onClick = {
-                            AnalyticsLogger.logEvent("statistics_setup_schedule_clicked")
-                            onNavigateToSchedule(selectedDate) //
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 250.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    if (dailyStats.totalBreaks == 0) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Пришло время настроить расписание отдыха!",
+                                style = MaterialTheme.typography.titleMedium,
+                                textAlign = TextAlign.Center
+                            )
+                            
+                            Spacer(Modifier.height(40.dp))
+                            
+                            Button(
+                                colors = ButtonDefaults.buttonColors().copy(
+                                    contentColor = MaterialTheme.colorScheme.background,
+                                    containerColor = MaterialTheme.colorScheme.onBackground
+                                ),
+                                onClick = {
+                                    AnalyticsLogger.logEvent("statistics_setup_schedule_clicked")
+                                    onNavigateToSchedule(selectedDate)
+                                }
+                            ) {
+                                Text(
+                                    text = "Настроить расписание перерывов",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
                         }
-                    ) {
-                        Text(
-                            text = "Настроить расписание перерывов",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
+                    } else {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            BreakProgressChart(
+                                stats = dailyStats,
+                            )
+
+                            Spacer(Modifier.height(20.dp))
+
+                            Text(
+                                text = when {
+                                    dailyStats.completionPercentage <= 0f -> ""
+                                    dailyStats.completionPercentage < 0.5f -> "Отлично! Продолжай в том же духе. Каждый перерыв помогает заботиться о себе!"
+                                    dailyStats.completionPercentage < 1f -> "Продолжай в том же духе, мы тобой гордимся!"
+                                    else -> "Ты настоящий мастер заботы о себе!"
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 35.dp)
+                            )
+                        }
                     }
-                } else {
-                    BreakProgressChart(
-                        stats = dailyStats,
-                    )
-
-                    Spacer(Modifier.height(20.dp))
-
-                    Text(
-                        text = "Отлично! Продолжай в том же духе.\nКаждый перерыв помогает заботиться\nо себе!",
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center
-                    )
                 }
+
+                Spacer(Modifier.height(20.dp))
+                val trendText = remember(dailyMoodStats) {
+                    val stats = dailyMoodStats.days.map { it.avg }
+                    val n = stats.size
+                    val prev = stats.subList(0, (n + 1) / 2).filter { it != 0f }.average()
+                    val cur = stats.subList((n + 1) / 2, n).filter { it != 0f }.average()
+
+                    when {
+                        cur - 1 > prev -> "Похоже, короткие перерывы помогают тебе лучше отдыхать!"
+                        cur + 1 < prev -> "Похоже, ты чувствуешь себя уставшим в последнее время. Может, пришло время отдохнуть подольше или проконсультироваться с кем-нибудь?"
+                        else -> "Продолжай соблюдать баланс активности и отдыха, а мы тебе поможем!"
+                    }
+                }
+                
+                MoodBarChart(
+                    stats = dailyMoodStats
+                )
+                
+                Spacer(Modifier.height(10.dp))
+                
+                Text(
+                    text = trendText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 35.dp, vertical = 10.dp).heightIn(min = 60.dp)
+                )
             }
         }
     }

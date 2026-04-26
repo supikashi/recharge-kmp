@@ -79,13 +79,13 @@ fun CalendarScreen(
         mutableStateOf(LocalDate(initialDate.year, initialDate.month, 1)) 
     }
     
-    // Calculate calendar days
+    
     val days = remember(displayedMonthFirstDay) {
         val daysInMonth = displayedMonthFirstDay.plus(1, DateTimeUnit.MONTH)
             .minus(1, DateTimeUnit.DAY).dayOfMonth
         
-        val firstDayOfWeek = displayedMonthFirstDay.dayOfWeek.isoDayNumber // 1 (Mon) .. 7 (Sun)
-        val offset = firstDayOfWeek - 1 // 0 (Mon) .. 6 (Sun)
+        val firstDayOfWeek = displayedMonthFirstDay.dayOfWeek.isoDayNumber 
+        val offset = firstDayOfWeek - 1 
         
         val list = mutableListOf<LocalDate?>()
         val year = displayedMonthFirstDay.year

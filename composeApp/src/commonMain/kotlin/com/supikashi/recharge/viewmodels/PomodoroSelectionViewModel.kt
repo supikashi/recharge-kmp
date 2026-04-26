@@ -56,10 +56,10 @@ class PomodoroSelectionViewModel(
                                 it.date > today || (it.date == today && it.time > currentTimeMinutes)
                             }
 
-                            // Add future breaks to delete list
+                            
                             breaksToDelete.addAll(futureBreaks)
 
-                            // Calculate new breaks starting from the last break's time
+                            
                             val startFromTime = if (task.date > today || (task.date == today && task.startTime > currentTimeMinutes)) {
                                 null
                             } else {
@@ -86,6 +86,6 @@ class PomodoroSelectionViewModel(
     }
 
     fun getPomodoroTypes(): List<PomodoroType> {
-        return PomodoroType.entries
+        return PomodoroType.entries.filter { it != PomodoroType.DEBUG }
     }
 }
