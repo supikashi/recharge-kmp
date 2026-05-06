@@ -37,10 +37,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.supikashi.recharge.analytics.AnalyticsLogger
+import com.supikashi.recharge.theme.AppTheme
 import com.supikashi.recharge.theme.Background
 import com.supikashi.recharge.theme.Primary
 import com.supikashi.recharge.theme.Secondary
@@ -172,12 +174,13 @@ private fun OnboardingContent(
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
         )
+        Spacer(modifier = Modifier.height(40.dp))
 
         Icon(
             painter = painterResource(page.image),
             contentDescription = null,
             tint = Color.Unspecified,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f, fill = false)
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -207,5 +210,13 @@ private fun OnboardingContent(
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
+    }
+}
+
+@Preview(heightDp = 700)
+@Composable
+fun OnboardingContentPreview() {
+    AppTheme {
+        OnboardingContent(0, 3, {})
     }
 }

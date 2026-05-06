@@ -98,18 +98,20 @@ actual class NotificationScheduler(
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+        
+        val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingIntent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (alarmManager.canScheduleExactAlarms()) {
-                println("alarmManager.setExactAndAllowWhileIdle 1")
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                println("alarmManager.setAlarmClock 1")
+                alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
             } else {
                 println("alarmManager.setAndAllowWhileIdle")
                 alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
             }
         } else {
-            println("alarmManager.setExactAndAllowWhileIdle 2")
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+            println("alarmManager.setAlarmClock 2")
+            alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
         }
     }
 

@@ -43,6 +43,7 @@ import com.supikashi.recharge.screens.CalendarScreen
 import com.supikashi.recharge.screens.HomeScreen
 import com.supikashi.recharge.screens.OnboardingScreen
 import com.supikashi.recharge.screens.PomodoroSelectionScreen
+import com.supikashi.recharge.screens.RestActivitiesListScreen
 import com.supikashi.recharge.screens.RestActivitiesScreen
 import com.supikashi.recharge.screens.RestScreen
 import com.supikashi.recharge.screens.ScheduleScreen
@@ -174,6 +175,13 @@ fun App(
         val debouncedNavigateToCalendar = rememberDebounceClickHandler {
             pendingDateEpochDays?.let { date ->
                 navController.navigateWithFlags(Screen.Calendar(date))
+            }
+        }
+
+        var pendingRestActivitiesListType: String? = null
+        val debouncedNavigateToList = rememberDebounceClickHandler {
+            pendingRestActivitiesListType?.let { type ->
+                navController.navigateWithFlags(Screen.RestActivitiesList(type))
             }
         }
         
@@ -322,9 +330,24 @@ fun App(
             composable<Screen.RestActivities> { backStackEntry ->
                 val route = backStackEntry.toRoute<Screen.RestActivities>()
                 val type = RestType.valueOf(route.type)
+                
                 RestActivitiesScreen(
                     type = type,
-                    onNavigateHome = debouncedNavigateToHome,
+                    onNavigateToList = {
+                        pendingRestActivitiesListType = type.name
+                        debouncedNavigateToList()
+                    },
+                    onNavigateBack = debouncedNavigateUp
+                )
+            }
+
+            composable<Screen.RestActivitiesList> { backStackEntry ->
+                val route = backStackEntry.toRoute<Screen.RestActivitiesList>()
+                val type = RestType.valueOf(route.type)
+                
+                RestActivitiesListScreen(
+                    type = type,
+                    onNavigateToCardView = debouncedNavigateUp,
                     onNavigateBack = debouncedNavigateUp
                 )
             }

@@ -22,6 +22,9 @@ sealed interface Screen {
     data class RestActivities(val type: String) : Screen
 
     @Serializable
+    data class RestActivitiesList(val type: String) : Screen
+
+    @Serializable
     data object Statistics : Screen
 
     @Serializable

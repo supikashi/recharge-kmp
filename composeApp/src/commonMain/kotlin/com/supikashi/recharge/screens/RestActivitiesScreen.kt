@@ -1,11 +1,13 @@
 package com.supikashi.recharge.screens
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,7 +47,13 @@ import com.supikashi.recharge.models.RestType
 import com.supikashi.recharge.theme.mascotPrimary
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.arrow_back
-import recharge.composeapp.generated.resources.home
+import recharge.composeapp.generated.resources.list
+import recharge.composeapp.generated.resources.view_carousel
+import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.launch
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.foundation.Image
@@ -52,9 +61,9 @@ import org.jetbrains.compose.resources.painterResource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import com.supikashi.recharge.analytics.AnalyticsLogger
@@ -65,12 +74,167 @@ import com.supikashi.recharge.models.CardContent
 @Composable
 fun RestActivitiesScreen(
     type: RestType,
-    onNavigateHome: () -> Unit,
+    onNavigateToList: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val localDensity = LocalDensity.current
     var sourceHeight by remember { mutableStateOf(0.dp) }
-    val activities = getActivitiesForType(type)
+    val originalActivities = remember(type) { getActivitiesForType(type) }
+    val shuffledActivities = rememberSaveable(type) { originalActivities.shuffled() }
+    var currentIndex by rememberSaveable { mutableStateOf(0) }
+
+    Scaffold { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.mascotPrimary)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = paddingValues.calculateTopPadding()),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Spacer(Modifier.height(sourceHeight))
+
+                BoxWithConstraints(
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val screenWidth = constraints.maxWidth.toFloat()
+
+                    Crossfade(
+                        targetState = currentIndex < shuffledActivities.size,
+                        modifier = Modifier.fillMaxSize(),
+                        label = "activities_crossfade"
+                    ) { hasMoreActivities ->
+                        if (hasMoreActivities) {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                val safeIndex = currentIndex.coerceAtMost(shuffledActivities.size - 1)
+                                if (safeIndex >= 0) {
+                                    val activity = shuffledActivities[safeIndex]
+                                    val offsetX = remember(safeIndex) { Animatable(0f) }
+                                    val rotation = remember(safeIndex) { Animatable(0f) }
+                                    val coroutineScope = rememberCoroutineScope()
+
+                                    if (safeIndex + 1 < shuffledActivities.size) {
+                                        val nextActivity = shuffledActivities[safeIndex + 1]
+                                        key(nextActivity) {
+                                            ActivityCard(
+                                                activity = nextActivity,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = 40.dp)
+                                                    .height(500.dp)
+                                                    .graphicsLayer {
+                                                        val progress = (offsetX.value.absoluteValue / (screenWidth * 1.5f)).coerceIn(0f, 1f)
+                                                        scaleX = 0.9f + (0.1f * progress)
+                                                        scaleY = 0.9f + (0.1f * progress)
+                                                        alpha = progress
+                                                    }
+                                            )
+                                        }
+                                    }
+
+                                    key(activity) {
+                                        ActivityCard(
+                                            activity = activity,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 40.dp)
+                                                .height(500.dp)
+                                                .graphicsLayer {
+                                                    translationX = offsetX.value
+                                                    rotationZ = rotation.value
+                                                }
+                                                .pointerInput(safeIndex) {
+                                                    detectDragGestures(
+                                                        onDragEnd = {
+                                                            coroutineScope.launch {
+                                                                if (offsetX.value.absoluteValue > screenWidth / 4f) {
+                                                                    val targetX = if (offsetX.value > 0) screenWidth * 1.5f else -screenWidth * 1.5f
+                                                                    val jobX = launch { offsetX.animateTo(targetX, tween(300)) }
+                                                                    val jobRot = launch { rotation.animateTo(rotation.value + if (offsetX.value > 0) 20f else -20f, tween(300)) }
+                                                                    jobX.join()
+                                                                    jobRot.join()
+                                                                    currentIndex++
+                                                                } else {
+                                                                    launch { offsetX.animateTo(0f, tween(300)) }
+                                                                    launch { rotation.animateTo(0f, tween(300)) }
+                                                                }
+                                                            }
+                                                        },
+                                                        onDrag = { change, dragAmount ->
+                                                            change.consume()
+                                                            coroutineScope.launch {
+                                                                offsetX.snapTo(offsetX.value + dragAmount.x)
+                                                                rotation.snapTo(offsetX.value / 20f)
+                                                            }
+                                                        }
+                                                    )
+                                                }
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Вы посмотрели все активности этой категории",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Spacer(Modifier.height(20.dp))
+                                    Button(
+                                        onClick = { currentIndex = 0 },
+                                        colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground, contentColor = MaterialTheme.colorScheme.background)
+                                    ) {
+                                        Text(
+                                            text = "Начать заново",
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(20.dp))
+            }
+
+            TopBar(
+                leftAction = onNavigateBack,
+                rightAction = onNavigateToList,
+                leftIcon = Res.drawable.arrow_back,
+                rightIcon = Res.drawable.list,
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(top = paddingValues.calculateTopPadding())
+                    .align(Alignment.TopCenter)
+                    .onGloballyPositioned { coordinates ->
+                        sourceHeight = with(localDensity) { coordinates.size.height.toDp() }
+                    }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+fun RestActivitiesListScreen(
+    type: RestType,
+    onNavigateToCardView: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
+    val localDensity = LocalDensity.current
+    var sourceHeight by remember { mutableStateOf(0.dp) }
+    val originalActivities = remember(type) { getActivitiesForType(type) }
 
     Scaffold { paddingValues ->
         Box(
@@ -90,30 +254,30 @@ fun RestActivitiesScreen(
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     contentAlignment = Alignment.Center
                 ) {
-                    val pagerState = rememberPagerState(pageCount = { activities.size })
+                    val pagerState = rememberPagerState(pageCount = { originalActivities.size })
 
                     HorizontalPager(
                         state = pagerState,
                         contentPadding = PaddingValues(horizontal = 40.dp),
-                        pageSpacing = 10.dp,
+                        pageSpacing = 5.dp,
                         modifier = Modifier.fillMaxSize()
                     ) { page ->
-                        val pageOffset = (
-                                (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                                ).absoluteValue
-
-                        val scale = 1f - (0.1f * pageOffset.coerceIn(0f, 1f))
-                        val alpha = 1f - (0.5f * pageOffset.coerceIn(0f, 1f))
-
                         ActivityCard(
-                            activity = activities[page],
+                            activity = originalActivities[page],
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(500.dp)
                                 .graphicsLayer {
+                                    val pageOffset = (
+                                            (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                                        ).absoluteValue
+
+                                    val scale = 1f - (0.1f * pageOffset.coerceIn(0f, 1f))
+                                    val cardAlpha = 1f - (0.5f * pageOffset.coerceIn(0f, 1f))
+
                                     scaleX = scale
                                     scaleY = scale
-                                    this.alpha = alpha
+                                    this.alpha = cardAlpha
                                 }
                         )
                     }
@@ -124,9 +288,7 @@ fun RestActivitiesScreen(
 
             TopBar(
                 leftAction = onNavigateBack,
-                rightAction = onNavigateHome,
                 leftIcon = Res.drawable.arrow_back,
-                rightIcon = Res.drawable.home,
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .padding(top = paddingValues.calculateTopPadding())
