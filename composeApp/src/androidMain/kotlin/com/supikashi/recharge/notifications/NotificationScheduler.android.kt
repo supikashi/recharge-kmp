@@ -26,8 +26,8 @@ actual class NotificationScheduler(
 ) {
     companion object {
         const val CHANNEL_ID = "break_notifications"
-        const val CHANNEL_NAME = "Уведомления о перерывах"
-        const val CHANNEL_DESCRIPTION = "Напоминания о запланированных перерывах"
+        const val CHANNEL_NAME = "Break notifications"
+        const val CHANNEL_DESCRIPTION = "Scheduled break reminders"
         
         private const val KEY_NOTIFICATION_ID = "notification_id"
         private const val KEY_TITLE = "title"

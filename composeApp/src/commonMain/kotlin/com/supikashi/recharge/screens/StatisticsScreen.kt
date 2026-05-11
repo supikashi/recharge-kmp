@@ -59,11 +59,22 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.arrow_left
 import recharge.composeapp.generated.resources.calendar
 import recharge.composeapp.generated.resources.home
+import recharge.composeapp.generated.resources.stats_completion_good
+import recharge.composeapp.generated.resources.stats_completion_great
+import recharge.composeapp.generated.resources.stats_completion_perfect
+import recharge.composeapp.generated.resources.stats_empty_schedule_title
+import recharge.composeapp.generated.resources.stats_record_mood_btn
+import recharge.composeapp.generated.resources.stats_setup_schedule_btn
+import recharge.composeapp.generated.resources.stats_title
+import recharge.composeapp.generated.resources.stats_trend_negative
+import recharge.composeapp.generated.resources.stats_trend_neutral
+import recharge.composeapp.generated.resources.stats_trend_positive
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -127,7 +138,7 @@ fun StatisticsScreen(
             )
 
             Text(
-                text = "СТАТИСТИКА",
+                text = stringResource(Res.string.stats_title),
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -144,7 +155,7 @@ fun StatisticsScreen(
                     .heightIn(min = 40.dp)
             ) {
                 Text(
-                    text = "Сделать запись о самочувствии",
+                    text = stringResource(Res.string.stats_record_mood_btn),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -215,7 +226,7 @@ fun StatisticsScreen(
                     if (dailyStats.totalBreaks == 0) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = "Пришло время настроить расписание отдыха!",
+                                text = stringResource(Res.string.stats_empty_schedule_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 textAlign = TextAlign.Center
                             )
@@ -233,7 +244,7 @@ fun StatisticsScreen(
                                 }
                             ) {
                                 Text(
-                                    text = "Настроить расписание перерывов",
+                                    text = stringResource(Res.string.stats_setup_schedule_btn),
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
@@ -249,9 +260,9 @@ fun StatisticsScreen(
                             Text(
                                 text = when {
                                     dailyStats.completionPercentage <= 0f -> ""
-                                    dailyStats.completionPercentage < 0.5f -> "Отлично! Продолжай в том же духе. Каждый перерыв помогает заботиться о себе!"
-                                    dailyStats.completionPercentage < 1f -> "Продолжай в том же духе, мы тобой гордимся!"
-                                    else -> "Ты настоящий мастер заботы о себе!"
+                                    dailyStats.completionPercentage < 0.5f -> stringResource(Res.string.stats_completion_good)
+                                    dailyStats.completionPercentage < 1f -> stringResource(Res.string.stats_completion_great)
+                                    else -> stringResource(Res.string.stats_completion_perfect)
                                 },
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
@@ -262,16 +273,20 @@ fun StatisticsScreen(
                 }
 
                 Spacer(Modifier.height(20.dp))
-                val trendText = remember(dailyMoodStats) {
+                val positiveTrend = stringResource(Res.string.stats_trend_positive)
+                val negativeTrend = stringResource(Res.string.stats_trend_negative)
+                val neutralTrend = stringResource(Res.string.stats_trend_neutral)
+
+                val trendText = remember(dailyMoodStats, positiveTrend, negativeTrend, neutralTrend) {
                     val stats = dailyMoodStats.days.map { it.avg }
                     val n = stats.size
                     val prev = stats.subList(0, (n + 1) / 2).filter { it != 0f }.average()
                     val cur = stats.subList((n + 1) / 2, n).filter { it != 0f }.average()
 
                     when {
-                        cur - 1 > prev -> "Похоже, короткие перерывы помогают тебе лучше отдыхать!"
-                        cur + 1 < prev -> "Похоже, ты чувствуешь себя уставшим в последнее время. Может, пришло время отдохнуть подольше или проконсультироваться с кем-нибудь?"
-                        else -> "Продолжай соблюдать баланс активности и отдыха, а мы тебе поможем!"
+                        cur - 1 > prev -> positiveTrend
+                        cur + 1 < prev -> negativeTrend
+                        else -> neutralTrend
                     }
                 }
                 

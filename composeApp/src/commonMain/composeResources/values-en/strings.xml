@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_title_1">HELLO!</string>
+    <string name="onboarding_desc_1">If you are here, it means you want to learn how to rest properly!</string>
+    <string name="onboarding_btn_1">Continue</string>
+
+    <string name="onboarding_title_2">WE\nREMIND YOU\nABOUT BREAKS!</string>
+    <string name="onboarding_desc_2">We will help you maintain focus and energy by building short breaks into your day.</string>
+    <string name="onboarding_btn_2">What else?</string>
+
+    <string name="onboarding_title_3"></string>
+    <string name="onboarding_desc_3">You can use the app to plan your time and find ideas for rest, and we will help you relax by sending break reminders!</string>
+    <string name="onboarding_btn_3">Let's go</string>
+
+    <string name="onboarding_out_of">of</string>
+
+    <string name="break_notification_passed">This break has already passed</string>
+    <string name="break_notification_start_rest">Start resting</string>
+    <string name="break_notification_time_to_break">Time to take a break!</string>
+    <string name="break_notification_postpone">Postpone break</string>
+    <string name="break_notification_cancel">Cancel break</string>
+
+    <string name="break_result_duration" formatted="false">Break for\n%1$d minutes!</string>
+    <string name="break_result_what_to_do">What to do?</string>
+    <string name="break_result_postponed">Break\npostponed</string>
+    <string name="break_result_cancelled">Break\ncancelled</string>
+
+    <string name="calendar_day_mo">Mo</string>
+    <string name="calendar_day_tu">Tu</string>
+    <string name="calendar_day_we">We</string>
+    <string name="calendar_day_th">Th</string>
+    <string name="calendar_day_fr">Fr</string>
+    <string name="calendar_day_sa">Sa</string>
+    <string name="calendar_day_su">Su</string>
+
+    <string name="home_time_to_rest">Time to rest!</string>
+    <string name="home_greeting">HELLO!</string>
+    <string name="home_what_to_do">What shall we do?</string>
+    <string name="home_survey_text">What do you think about the current version of the app? Share with us so we can become better!</string>
+    <string name="home_take_survey">Take survey!</string>
+    <string name="home_schedule_title">Schedule</string>
+    <string name="home_schedule_desc">Fill in the tasks, and we will help you build a break schedule!</string>
+    <string name="home_rest_title">Rest</string>
+    <string name="home_rest_desc">We will find a way to relax for every taste!</string>
+    <string name="home_stats_title">Statistics</string>
+    <string name="home_stats_desc">Here are your mood notes and achievements!</string>
+    <string name="home_record_mood">Record mood</string>
+
+    <string name="pomodoro_select_title">Choose your\ntime-management</string>
+    <string name="pomodoro_test">Test Pomodoro</string>
+    <string name="pomodoro_classic">Pomodoro 25/5</string>
+    <string name="pomodoro_extended">Pomodoro 52/17</string>
+    <string name="pomodoro_deep_work">Pomodoro 90/30</string>
+    <string name="pomodoro_desc" formatted="false">Work slot %1$d minutes\nrest - %2$d minutes</string>
+
+    <string name="rest_activities_all_viewed">You have viewed all activities in this category</string>
+    <string name="rest_activities_restart">Start over</string>
+    <string name="rest_activities_open_instruction">Open instruction</string>
+    <string name="rest_activities_done">Done!</string>
+    <string name="rest_activities_next">Next</string>
+    <string name="rest_activities_duration" formatted="false">DURATION: %1$d-%2$d minutes</string>
+    <string name="rest_activities_loading">Loading activities...</string>
+    <string name="rest_activities_load_error">Could not load activities</string>
+
+    <string name="rest_select_title">Choose the rest type</string>
+    <string name="rest_type_calm">Calm</string>
+    <string name="rest_type_active">Active</string>
+    <string name="rest_type_creative">Creative</string>
+    <string name="rest_desc_calm">If you experience stress or anxiety</string>
+    <string name="rest_desc_active">If you want to cheer up a bit</string>
+    <string name="rest_desc_creative">If you dream and fantasize, not knowing where to put your ideas</string>
+
+    <string name="schedule_empty_state">There is nothing in the schedule for this day yet,\nlet's add something</string>
+    <string name="schedule_add_task">Add task</string>
+    <string name="schedule_new_slot">New slot</string>
+    <string name="schedule_edit_slot">Editing</string>
+    <string name="schedule_task_name_hint">Task name</string>
+    <string name="schedule_allow_break">Allow built-in break</string>
+    <string name="schedule_error_empty_name">Enter task name</string>
+    <string name="schedule_error_invalid_start">Invalid start time</string>
+    <string name="schedule_error_empty_start">Specify start time</string>
+    <string name="schedule_error_invalid_end">Invalid end time</string>
+    <string name="schedule_error_empty_end">Specify end time</string>
+    <string name="schedule_error_start_after_end">Start time must be before end time</string>
+    <string name="schedule_error_overlap">Task overlaps with other tasks</string>
+    <string name="schedule_close_desc">Close</string>
+    <string name="schedule_delete_desc">Delete</string>
+
+    <string name="settings_title">SETTINGS</string>
+    <string name="settings_change_pomodoro">Change Pomodoro type</string>
+    <string name="settings_show_onboarding">Show onboarding</string>
+
+    <string name="stats_title">STATISTICS</string>
+    <string name="stats_record_mood_btn">Record mood</string>
+    <string name="stats_empty_schedule_title">It's time to set up your rest schedule!</string>
+    <string name="stats_setup_schedule_btn">Set up rest schedule</string>
+    <string name="stats_completion_good">Great! Keep it up. Every break helps you take care of yourself!</string>
+    <string name="stats_completion_great">Keep it up, we are proud of you!</string>
+    <string name="stats_completion_perfect">You are a true master of self-care!</string>
+    <string name="stats_trend_positive">It seems like short breaks are helping you rest better!</string>
+    <string name="stats_trend_negative">It seems you have been feeling tired lately. Maybe it's time to take a longer rest or consult someone?</string>
+    <string name="stats_trend_neutral">Keep balancing activity and rest, and we will help you!</string>
+    <string name="stats_you_rested">You rested</string>
+    <string name="stats_times">times</string>
+    <string name="stats_mood_chart_title">Mood chart</string>
+
+    <string name="notification_permission_title">Notification permission</string>
+    <string name="notification_permission_desc">To remind you to rest, the app needs access to notifications. Please enable them in the settings.</string>
+    <string name="notification_permission_later">Later</string>
+    <string name="notification_permission_settings">To settings</string>
+
+    <string name="overlap_warning_title">Schedule change</string>
+    <string name="overlap_warning_desc">This rest overlaps with work tasks. They will be automatically shortened. Continue?</string>
+    <string name="overlap_warning_cancel">Cancel</string>
+    <string name="overlap_warning_continue">Continue</string>
+
+    <string name="survey_dialog_title">New mood record</string>
+    <string name="survey_dialog_question">How are you feeling?</string>
+    <string name="task_card_untitled">Untitled</string>
+    <string name="time_range_from">from</string>
+    <string name="time_range_to">to</string>
+    <string name="time_picker_title">Select time</string>
+    <string name="time_picker_cancel">Cancel</string>
+    <string name="time_picker_save">Save</string>
+
+    <string name="work_rest_switch_work">work</string>
+    <string name="work_rest_switch_rest">rest</string>
+
+    <string name="month_genitive_january">January</string>
+    <string name="month_genitive_february">February</string>
+    <string name="month_genitive_march">March</string>
+    <string name="month_genitive_april">April</string>
+    <string name="month_genitive_may">May</string>
+    <string name="month_genitive_june">June</string>
+    <string name="month_genitive_july">July</string>
+    <string name="month_genitive_august">August</string>
+    <string name="month_genitive_september">September</string>
+    <string name="month_genitive_october">October</string>
+    <string name="month_genitive_november">November</string>
+    <string name="month_genitive_december">December</string>
+
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+    <string name="notification_time_to_rest_title">Time to rest!</string>
+    <string name="notification_time_to_rest_desc">Let\'s step out of the flow for a minute — your mind and body will thank you</string>
+    <string name="notification_break_ended_title">Break is over!</string>
+    <string name="notification_break_ended_desc">Time to get back to your tasks</string>
+    <string name="settings_language">Change language</string>
+    <string name="language_select_title">Choose language</string>
+    <string name="language_system">System</string>
+    <string name="language_ru">Русский</string>
+    <string name="language_en">English</string>
+</resources>

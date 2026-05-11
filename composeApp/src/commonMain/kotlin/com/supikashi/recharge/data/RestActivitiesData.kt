@@ -1,5 +1,5 @@
 package com.supikashi.recharge.data
-
+/*
 import com.supikashi.recharge.models.CardContent
 import com.supikashi.recharge.models.RestActivity
 import com.supikashi.recharge.models.RestType
@@ -357,3 +357,4 @@ fun getActivitiesForType(type: RestType?): List<RestActivity> {
         null -> emptyList()
     }
 }
+*/

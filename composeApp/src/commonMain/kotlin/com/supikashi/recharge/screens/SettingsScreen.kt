@@ -27,16 +27,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.supikashi.recharge.analytics.AnalyticsLogger
+import com.supikashi.recharge.components.LanguageSelectionDialog
 import com.supikashi.recharge.components.TopBar
+import com.supikashi.recharge.models.AppLanguage
 import com.supikashi.recharge.models.RestType
 import com.supikashi.recharge.theme.mascotPrimary
 import com.supikashi.recharge.viewmodels.SettingsViewModel
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.arrow_back
 import recharge.composeapp.generated.resources.home
+import recharge.composeapp.generated.resources.settings_change_pomodoro
+import recharge.composeapp.generated.resources.settings_show_onboarding
+import recharge.composeapp.generated.resources.settings_title
+import recharge.composeapp.generated.resources.settings_language
+import recharge.composeapp.generated.resources.language_system
+import recharge.composeapp.generated.resources.language_ru
+import recharge.composeapp.generated.resources.language_en
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +61,19 @@ fun SettingsScreen(
     onNavigateToOnboarding: () -> Unit
 ) {
     val viewModel: SettingsViewModel = koinViewModel()
+    val currentLanguage by viewModel.appLanguage.collectAsStateWithLifecycle()
+
+    var showLanguageDialog by remember { mutableStateOf(false) }
+
+    if (showLanguageDialog) {
+        LanguageSelectionDialog(
+            currentLanguage = currentLanguage,
+            onLanguageSelected = { newLanguage ->
+                viewModel.setLanguage(newLanguage)
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
 
     Scaffold { paddingValues ->
         Column(
@@ -63,7 +91,7 @@ fun SettingsScreen(
             )
 
             Text(
-                text = "НАСТРОЙКИ",
+                text = stringResource(Res.string.settings_title),
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -91,7 +119,7 @@ fun SettingsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     SettingsButton(
-                        text = "Поменять тип Pomodoro",
+                        text = stringResource(Res.string.settings_change_pomodoro),
                         onClick = {
                             AnalyticsLogger.logEvent("settings_change_pomodoro_clicked")
                             onNavigateToPomodoroSelection()
@@ -99,21 +127,20 @@ fun SettingsScreen(
                     )
 
                     SettingsButton(
-                        text = "Показать онбординг",
+                        text = stringResource(Res.string.settings_language),
                         onClick = {
-                            AnalyticsLogger.logEvent("settings_show_onboarding_clicked")
-                            viewModel.resetOnboarding()
-                            onNavigateToOnboarding()
+                            AnalyticsLogger.logEvent("settings_change_language_clicked")
+                            showLanguageDialog = true
                         }
                     )
 
-
-
-
-
-
-
-
+                    SettingsButton(
+                        text = stringResource(Res.string.settings_show_onboarding),
+                        onClick = {
+                            AnalyticsLogger.logEvent("settings_show_onboarding_clicked")
+                            onNavigateToOnboarding()
+                        }
+                    )
                 }
             }
         }

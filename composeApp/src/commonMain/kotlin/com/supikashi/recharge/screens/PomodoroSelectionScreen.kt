@@ -36,10 +36,17 @@ import com.supikashi.recharge.components.TopBar
 import com.supikashi.recharge.models.PomodoroType
 import com.supikashi.recharge.theme.mascotPrimary
 import com.supikashi.recharge.viewmodels.PomodoroSelectionViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.arrow_back
 import recharge.composeapp.generated.resources.home
+import recharge.composeapp.generated.resources.pomodoro_classic
+import recharge.composeapp.generated.resources.pomodoro_deep_work
+import recharge.composeapp.generated.resources.pomodoro_desc
+import recharge.composeapp.generated.resources.pomodoro_extended
+import recharge.composeapp.generated.resources.pomodoro_select_title
+import recharge.composeapp.generated.resources.pomodoro_test
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
@@ -74,7 +81,7 @@ fun PomodoroSelectionScreen(
             )
             
             Text(
-                text = "Выбери вид\nтайм-менеджмента",
+                text = stringResource(Res.string.pomodoro_select_title),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(top = 16.dp, bottom = 32.dp),
                 textAlign = TextAlign.Center
@@ -155,18 +162,17 @@ private fun PomodoroTypeItem(
         ) {
             Text(
                 text = when (type) {
-                    PomodoroType.DEBUG -> "Test Pomodoro"
-                    PomodoroType.CLASSIC -> "Pomodoro 25/5"
-                    PomodoroType.EXTENDED -> "Pomodoro 52/17"
-                    PomodoroType.DEEP_WORK -> "Pomodoro 90/30"
+                    PomodoroType.DEBUG -> stringResource(Res.string.pomodoro_test)
+                    PomodoroType.CLASSIC -> stringResource(Res.string.pomodoro_classic)
+                    PomodoroType.EXTENDED -> stringResource(Res.string.pomodoro_extended)
+                    PomodoroType.DEEP_WORK -> stringResource(Res.string.pomodoro_deep_work)
                 },
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium
             )
             
             Text(
-                text = "Рабочий слот ${type.workMinutes} минуты\n" +
-                        "отдых - ${type.restMinutes} минут",
+                text = stringResource(Res.string.pomodoro_desc, type.workMinutes, type.restMinutes),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier

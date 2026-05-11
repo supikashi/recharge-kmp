@@ -49,40 +49,52 @@ import com.supikashi.recharge.theme.Secondary
 import com.supikashi.recharge.viewmodels.OnboardingState
 import com.supikashi.recharge.viewmodels.OnboardingViewModel
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.clock
 import recharge.composeapp.generated.resources.frame_1_png
 import recharge.composeapp.generated.resources.frame_2_png
 import recharge.composeapp.generated.resources.frame_3_png
+import recharge.composeapp.generated.resources.onboarding_btn_1
+import recharge.composeapp.generated.resources.onboarding_btn_2
+import recharge.composeapp.generated.resources.onboarding_btn_3
+import recharge.composeapp.generated.resources.onboarding_desc_1
+import recharge.composeapp.generated.resources.onboarding_desc_2
+import recharge.composeapp.generated.resources.onboarding_desc_3
 import recharge.composeapp.generated.resources.onboarding_mascot_1
 import recharge.composeapp.generated.resources.onboarding_mascot_2
+import recharge.composeapp.generated.resources.onboarding_out_of
+import recharge.composeapp.generated.resources.onboarding_title_1
+import recharge.composeapp.generated.resources.onboarding_title_2
+import recharge.composeapp.generated.resources.onboarding_title_3
 
 data class OnboardingPage(
-    val title: String,
-    val description: String,
-    val buttonString: String,
+    val title: StringResource,
+    val description: StringResource,
+    val buttonString: StringResource,
     val image: DrawableResource
 )
 
 val onboardingPages = listOf(
     OnboardingPage(
-        title = "ПРИВЕТ!",
-        description = "Если ты зашел сюда, значит, ты хочешь научиться классно отдыхать!",
-        buttonString = "Продолжить",
+        title = Res.string.onboarding_title_1,
+        description = Res.string.onboarding_desc_1,
+        buttonString = Res.string.onboarding_btn_1,
         image = Res.drawable.onboarding_mascot_1
     ),
     OnboardingPage(
-        title = "МЫ\nНАПОМИНАЕМ\nО ПАУЗАХ!",
-        description = "Поможем тебе сохранять фокус и энергию, встраивая короткие перерывы в твой день.",
-        buttonString = "А что еще?",
+        title = Res.string.onboarding_title_2,
+        description = Res.string.onboarding_desc_2,
+        buttonString = Res.string.onboarding_btn_2,
         image = Res.drawable.onboarding_mascot_2
     ),
     OnboardingPage(
-        title = "",
-        description = "С помощью приложения ты можешь планировать своё время и находить идеи для отдыха, а мы будем тебе помогать отдыхать, присылая напоминания о перерыве!",
-        buttonString = "Погнали",
+        title = Res.string.onboarding_title_3,
+        description = Res.string.onboarding_desc_3,
+        buttonString = Res.string.onboarding_btn_3,
         image = Res.drawable.onboarding_mascot_1
     )
 )
@@ -160,7 +172,7 @@ private fun OnboardingContent(
         verticalArrangement = Arrangement.Bottom
     ) {
         Text(
-            text = page.title,
+            text = stringResource(page.title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
@@ -169,7 +181,7 @@ private fun OnboardingContent(
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
-            text = page.description,
+            text = stringResource(page.description),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
@@ -186,7 +198,7 @@ private fun OnboardingContent(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "${currentPage + 1} из $totalPages",
+            text = "${currentPage + 1} ${stringResource(Res.string.onboarding_out_of)} $totalPages",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onBackground,
         )
@@ -205,7 +217,7 @@ private fun OnboardingContent(
             )
         ) {
             Text(
-                text = page.buttonString,
+                text = stringResource(page.buttonString),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

@@ -16,7 +16,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.lazy.LazyListState
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.time_picker_cancel
+import recharge.composeapp.generated.resources.time_picker_save
+import recharge.composeapp.generated.resources.time_picker_title
+import recharge.composeapp.generated.resources.time_range_from
+import recharge.composeapp.generated.resources.time_range_to
 import kotlin.math.abs
 
 fun LazyListState.getCenteredItemIndex(): Int {
@@ -43,13 +50,13 @@ fun TimeRangeInputManual(
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         TimeColumn(
-            label = "от",
+            label = stringResource(Res.string.time_range_from),
             timeString = from,
             onTimeChanged = onFromTimeChanged,
             modifier = Modifier.weight(1f)
         )
         TimeColumn(
-            label = "до",
+            label = stringResource(Res.string.time_range_to),
             timeString = to,
             onTimeChanged = onToTimeChanged,
             modifier = Modifier.weight(1f)
@@ -155,7 +162,7 @@ fun WheelTimePickerDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Выберите время",
+                    text = stringResource(Res.string.time_picker_title),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
@@ -235,7 +242,7 @@ fun WheelTimePickerDialog(
                         onClick = onDismiss
                     ) {
                         Text(
-                            text = "Отмена",
+                            text = stringResource(Res.string.time_picker_cancel),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -251,7 +258,7 @@ fun WheelTimePickerDialog(
                         }
                     ) {
                         Text(
-                            text = "Сохранить",
+                            text = stringResource(Res.string.time_picker_save),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }

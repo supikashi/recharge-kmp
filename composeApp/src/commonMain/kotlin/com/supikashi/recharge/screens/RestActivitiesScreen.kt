@@ -1,21 +1,28 @@
 package com.supikashi.recharge.screens
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,64 +31,91 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.supikashi.recharge.LocalAppLocale
+import com.supikashi.recharge.analytics.AnalyticsLogger
 import com.supikashi.recharge.components.TopBar
-import com.supikashi.recharge.data.getActivitiesForType
+import com.supikashi.recharge.models.CardContent
 import com.supikashi.recharge.models.RestActivity
 import com.supikashi.recharge.models.RestType
 import com.supikashi.recharge.theme.mascotPrimary
+import com.supikashi.recharge.viewmodels.RestActivitiesViewModel
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.active_1_1
+import recharge.composeapp.generated.resources.active_1_2
+import recharge.composeapp.generated.resources.active_1_3
+import recharge.composeapp.generated.resources.active_1_4
+import recharge.composeapp.generated.resources.active_2_1
+import recharge.composeapp.generated.resources.active_2_2
+import recharge.composeapp.generated.resources.active_3_1
+import recharge.composeapp.generated.resources.active_3_2
+import recharge.composeapp.generated.resources.active_3_3
+import recharge.composeapp.generated.resources.active_4_1
+import recharge.composeapp.generated.resources.active_4_2
+import recharge.composeapp.generated.resources.active_4_3
+import recharge.composeapp.generated.resources.active_5_1
+import recharge.composeapp.generated.resources.active_5_2
+import recharge.composeapp.generated.resources.active_5_3
 import recharge.composeapp.generated.resources.arrow_back
 import recharge.composeapp.generated.resources.list
-import recharge.composeapp.generated.resources.view_carousel
-import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.input.pointer.pointerInput
-import kotlinx.coroutines.launch
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.foundation.Image
-import org.jetbrains.compose.resources.painterResource
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import com.supikashi.recharge.analytics.AnalyticsLogger
+import recharge.composeapp.generated.resources.rest_activities_all_viewed
+import recharge.composeapp.generated.resources.rest_activities_done
+import recharge.composeapp.generated.resources.rest_activities_duration
+import recharge.composeapp.generated.resources.rest_activities_load_error
+import recharge.composeapp.generated.resources.rest_activities_loading
+import recharge.composeapp.generated.resources.rest_activities_next
+import recharge.composeapp.generated.resources.rest_activities_open_instruction
+import recharge.composeapp.generated.resources.rest_activities_restart
 import kotlin.math.absoluteValue
-import com.supikashi.recharge.models.CardContent
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun RestActivitiesScreen(
     type: RestType,
     onNavigateToList: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: RestActivitiesViewModel = koinViewModel()
 ) {
     val localDensity = LocalDensity.current
+    val locale = LocalAppLocale.current
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var sourceHeight by remember { mutableStateOf(0.dp) }
-    val originalActivities = remember(type) { getActivitiesForType(type) }
-    val shuffledActivities = rememberSaveable(type) { originalActivities.shuffled() }
-    var currentIndex by rememberSaveable { mutableStateOf(0) }
+    val shuffledActivities = remember(type, locale, uiState.activities) { uiState.activities.shuffled() }
+    var currentIndex by rememberSaveable(type, locale) { mutableStateOf(0) }
+
+    LaunchedEffect(type, locale) {
+        viewModel.loadActivities(type, locale)
+    }
 
     Scaffold { paddingValues ->
         Box(
@@ -103,101 +137,112 @@ fun RestActivitiesScreen(
                 ) {
                     val screenWidth = constraints.maxWidth.toFloat()
 
-                    Crossfade(
-                        targetState = currentIndex < shuffledActivities.size,
-                        modifier = Modifier.fillMaxSize(),
-                        label = "activities_crossfade"
-                    ) { hasMoreActivities ->
-                        if (hasMoreActivities) {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                val safeIndex = currentIndex.coerceAtMost(shuffledActivities.size - 1)
-                                if (safeIndex >= 0) {
-                                    val activity = shuffledActivities[safeIndex]
-                                    val offsetX = remember(safeIndex) { Animatable(0f) }
-                                    val rotation = remember(safeIndex) { Animatable(0f) }
-                                    val coroutineScope = rememberCoroutineScope()
+                    when {
+                        uiState.isLoading -> RestActivitiesMessage(
+                            text = stringResource(Res.string.rest_activities_loading)
+                        )
 
-                                    if (safeIndex + 1 < shuffledActivities.size) {
-                                        val nextActivity = shuffledActivities[safeIndex + 1]
-                                        key(nextActivity) {
+                        uiState.isError -> RestActivitiesMessage(
+                            text = stringResource(Res.string.rest_activities_load_error)
+                        )
+
+                        else -> Crossfade(
+                            targetState = currentIndex < shuffledActivities.size,
+                            modifier = Modifier.fillMaxSize(),
+                            label = "activities_crossfade"
+                        ) { hasMoreActivities ->
+                            if (hasMoreActivities) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    val safeIndex = currentIndex.coerceAtMost(shuffledActivities.size - 1)
+                                    if (safeIndex >= 0) {
+                                        val activity = shuffledActivities[safeIndex]
+                                        val offsetX = remember(safeIndex) { Animatable(0f) }
+                                        val rotation = remember(safeIndex) { Animatable(0f) }
+                                        val coroutineScope = rememberCoroutineScope()
+
+                                        if (safeIndex + 1 < shuffledActivities.size) {
+                                            val nextActivity = shuffledActivities[safeIndex + 1]
+                                            key(nextActivity) {
+                                                ActivityCard(
+                                                    activity = nextActivity,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(horizontal = 40.dp)
+                                                        .height(500.dp)
+                                                        .graphicsLayer {
+                                                            val progress = (offsetX.value.absoluteValue / (screenWidth * 1.5f)).coerceIn(0f, 1f)
+                                                            scaleX = 0.9f + (0.1f * progress)
+                                                            scaleY = 0.9f + (0.1f * progress)
+                                                            alpha = progress
+                                                        }
+                                                )
+                                            }
+                                        }
+
+                                        key(activity) {
                                             ActivityCard(
-                                                activity = nextActivity,
+                                                activity = activity,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(horizontal = 40.dp)
                                                     .height(500.dp)
                                                     .graphicsLayer {
-                                                        val progress = (offsetX.value.absoluteValue / (screenWidth * 1.5f)).coerceIn(0f, 1f)
-                                                        scaleX = 0.9f + (0.1f * progress)
-                                                        scaleY = 0.9f + (0.1f * progress)
-                                                        alpha = progress
+                                                        translationX = offsetX.value
+                                                        rotationZ = rotation.value
+                                                    }
+                                                    .pointerInput(safeIndex) {
+                                                        detectDragGestures(
+                                                            onDragEnd = {
+                                                                coroutineScope.launch {
+                                                                    if (offsetX.value.absoluteValue > screenWidth / 4f) {
+                                                                        val targetX = if (offsetX.value > 0) screenWidth * 1.5f else -screenWidth * 1.5f
+                                                                        val jobX = launch { offsetX.animateTo(targetX, tween(300)) }
+                                                                        val jobRot = launch { rotation.animateTo(rotation.value + if (offsetX.value > 0) 20f else -20f, tween(300)) }
+                                                                        jobX.join()
+                                                                        jobRot.join()
+                                                                        currentIndex++
+                                                                    } else {
+                                                                        launch { offsetX.animateTo(0f, tween(300)) }
+                                                                        launch { rotation.animateTo(0f, tween(300)) }
+                                                                    }
+                                                                }
+                                                            },
+                                                            onDrag = { change, dragAmount ->
+                                                                change.consume()
+                                                                coroutineScope.launch {
+                                                                    offsetX.snapTo(offsetX.value + dragAmount.x)
+                                                                    rotation.snapTo(offsetX.value / 20f)
+                                                                }
+                                                            }
+                                                        )
                                                     }
                                             )
                                         }
                                     }
-
-                                    key(activity) {
-                                        ActivityCard(
-                                            activity = activity,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 40.dp)
-                                                .height(500.dp)
-                                                .graphicsLayer {
-                                                    translationX = offsetX.value
-                                                    rotationZ = rotation.value
-                                                }
-                                                .pointerInput(safeIndex) {
-                                                    detectDragGestures(
-                                                        onDragEnd = {
-                                                            coroutineScope.launch {
-                                                                if (offsetX.value.absoluteValue > screenWidth / 4f) {
-                                                                    val targetX = if (offsetX.value > 0) screenWidth * 1.5f else -screenWidth * 1.5f
-                                                                    val jobX = launch { offsetX.animateTo(targetX, tween(300)) }
-                                                                    val jobRot = launch { rotation.animateTo(rotation.value + if (offsetX.value > 0) 20f else -20f, tween(300)) }
-                                                                    jobX.join()
-                                                                    jobRot.join()
-                                                                    currentIndex++
-                                                                } else {
-                                                                    launch { offsetX.animateTo(0f, tween(300)) }
-                                                                    launch { rotation.animateTo(0f, tween(300)) }
-                                                                }
-                                                            }
-                                                        },
-                                                        onDrag = { change, dragAmount ->
-                                                            change.consume()
-                                                            coroutineScope.launch {
-                                                                offsetX.snapTo(offsetX.value + dragAmount.x)
-                                                                rotation.snapTo(offsetX.value / 20f)
-                                                            }
-                                                        }
-                                                    )
-                                                }
-                                        )
-                                    }
                                 }
-                            }
-                        } else {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = "Вы посмотрели все активности этой категории",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        textAlign = TextAlign.Center
-                                    )
-                                    Spacer(Modifier.height(20.dp))
-                                    Button(
-                                        onClick = { currentIndex = 0 },
-                                        colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground, contentColor = MaterialTheme.colorScheme.background)
+                            } else {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
-                                            text = "Начать заново",
-                                            style = MaterialTheme.typography.bodyMedium
+                                            text = stringResource(Res.string.rest_activities_all_viewed),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.padding(horizontal = 20.dp)
                                         )
+                                        Spacer(Modifier.height(20.dp))
+                                        Button(
+                                            onClick = { currentIndex = 0 },
+                                            colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground, contentColor = MaterialTheme.colorScheme.background)
+                                        ) {
+                                            Text(
+                                                text = stringResource(Res.string.rest_activities_restart),
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -230,11 +275,18 @@ fun RestActivitiesScreen(
 fun RestActivitiesListScreen(
     type: RestType,
     onNavigateToCardView: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    viewModel: RestActivitiesViewModel = koinViewModel()
 ) {
     val localDensity = LocalDensity.current
+    val locale = LocalAppLocale.current
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var sourceHeight by remember { mutableStateOf(0.dp) }
-    val originalActivities = remember(type) { getActivitiesForType(type) }
+    val originalActivities = uiState.activities
+
+    LaunchedEffect(type, locale) {
+        viewModel.loadActivities(type, locale)
+    }
 
     Scaffold { paddingValues ->
         Box(
@@ -254,32 +306,48 @@ fun RestActivitiesListScreen(
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     contentAlignment = Alignment.Center
                 ) {
-                    val pagerState = rememberPagerState(pageCount = { originalActivities.size })
-
-                    HorizontalPager(
-                        state = pagerState,
-                        contentPadding = PaddingValues(horizontal = 40.dp),
-                        pageSpacing = 5.dp,
-                        modifier = Modifier.fillMaxSize()
-                    ) { page ->
-                        ActivityCard(
-                            activity = originalActivities[page],
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(500.dp)
-                                .graphicsLayer {
-                                    val pageOffset = (
-                                            (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                                        ).absoluteValue
-
-                                    val scale = 1f - (0.1f * pageOffset.coerceIn(0f, 1f))
-                                    val cardAlpha = 1f - (0.5f * pageOffset.coerceIn(0f, 1f))
-
-                                    scaleX = scale
-                                    scaleY = scale
-                                    this.alpha = cardAlpha
-                                }
+                    when {
+                        uiState.isLoading -> RestActivitiesMessage(
+                            text = stringResource(Res.string.rest_activities_loading)
                         )
+
+                        uiState.isError -> RestActivitiesMessage(
+                            text = stringResource(Res.string.rest_activities_load_error)
+                        )
+
+                        originalActivities.isEmpty() -> RestActivitiesMessage(
+                            text = stringResource(Res.string.rest_activities_all_viewed)
+                        )
+
+                        else -> {
+                            val pagerState = rememberPagerState(pageCount = { originalActivities.size })
+
+                            HorizontalPager(
+                                state = pagerState,
+                                contentPadding = PaddingValues(horizontal = 40.dp),
+                                pageSpacing = 5.dp,
+                                modifier = Modifier.fillMaxSize()
+                            ) { page ->
+                                ActivityCard(
+                                    activity = originalActivities[page],
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(500.dp)
+                                        .graphicsLayer {
+                                            val pageOffset = (
+                                                    (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+                                                ).absoluteValue
+
+                                            val scale = 1f - (0.1f * pageOffset.coerceIn(0f, 1f))
+                                            val cardAlpha = 1f - (0.5f * pageOffset.coerceIn(0f, 1f))
+
+                                            scaleX = scale
+                                            scaleY = scale
+                                            this.alpha = cardAlpha
+                                        }
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -299,6 +367,17 @@ fun RestActivitiesListScreen(
             )
         }
     }
+}
+
+@Composable
+private fun RestActivitiesMessage(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onBackground,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth()
+    )
 }
 
 @Composable
@@ -377,9 +456,10 @@ private fun CardStepContent(
             )
         }
 
-        if (content.image != null) {
+        val imageResource = mapImageToResource(content.imageId)
+        if (imageResource != null) {
             Image(
-                painter = painterResource(content.image),
+                painter = painterResource(imageResource),
                 contentDescription = null,
                 contentScale = ContentScale.FillHeight,
                 modifier = Modifier
@@ -418,6 +498,25 @@ private fun CardStepContent(
             )
         }
     }
+}
+
+private fun mapImageToResource(imageId: String?): DrawableResource? = when (imageId) {
+    "active_1_1" -> Res.drawable.active_1_1
+    "active_1_2" -> Res.drawable.active_1_2
+    "active_1_3" -> Res.drawable.active_1_3
+    "active_1_4" -> Res.drawable.active_1_4
+    "active_2_1" -> Res.drawable.active_2_1
+    "active_2_2" -> Res.drawable.active_2_2
+    "active_3_1" -> Res.drawable.active_3_1
+    "active_3_2" -> Res.drawable.active_3_2
+    "active_3_3" -> Res.drawable.active_3_3
+    "active_4_1" -> Res.drawable.active_4_1
+    "active_4_2" -> Res.drawable.active_4_2
+    "active_4_3" -> Res.drawable.active_4_3
+    "active_5_1" -> Res.drawable.active_5_1
+    "active_5_2" -> Res.drawable.active_5_2
+    "active_5_3" -> Res.drawable.active_5_3
+    else -> null
 }
 
 @Composable
@@ -477,9 +576,9 @@ private fun ActivityCard(
             val isEnd = visibleStepIndex == activity.steps.lastIndex
 
             val buttonText = when {
-                isStart -> "Открыть инструкцию"
-                isEnd -> "Готово!"
-                else -> "Далее"
+                isStart -> stringResource(Res.string.rest_activities_open_instruction)
+                isEnd -> stringResource(Res.string.rest_activities_done)
+                else -> stringResource(Res.string.rest_activities_next)
             }
 
             val onButtonClick: () -> Unit = {
@@ -510,8 +609,7 @@ private fun ActivityCard(
                 }
             } else null
 
-            val headerText = 
-                "ДЛИТЕЛЬНОСТЬ: ${activity.durationMin}-${activity.durationMax} минут"
+            val headerText = stringResource(Res.string.rest_activities_duration, activity.durationMin, activity.durationMax)
             
 
             CardStepContent(

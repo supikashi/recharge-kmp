@@ -53,11 +53,13 @@ import com.supikashi.recharge.theme.AppTheme
 import com.supikashi.recharge.utils.rememberDebounceClickHandler
 import com.supikashi.recharge.utils.rememberOpenAppSettings
 import com.supikashi.recharge.viewmodels.NotificationViewModel
+import com.supikashi.recharge.viewmodels.SettingsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.compose.viewmodel.koinViewModel
-
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.supikashi.recharge.models.AppLanguage
 
 fun NavController.navigateWithFlags(
     route: Any,
@@ -77,8 +79,20 @@ fun App(
     shouldOpenBreakNotification: Boolean = false,
     onBreakNotificationNavigated: () -> Unit = {}
 ) {
-    AppTheme {
-        val isIOS = getPlatform().name.contains("iOS")
+    val settingsViewModel: SettingsViewModel = koinViewModel()
+    val language by settingsViewModel.appLanguage.collectAsStateWithLifecycle()
+
+    val currentAppLocale = remember(language) {
+        when (language) {
+            AppLanguage.SYSTEM -> null
+            AppLanguage.RUSSIAN -> "ru"
+            AppLanguage.ENGLISH -> "en"
+        }
+    }
+
+    AppEnvironment(appLocale = currentAppLocale) {
+        AppTheme {
+            val isIOS = getPlatform().name.contains("iOS")
         val navController = rememberNavController()
         val notificationViewModel : NotificationViewModel = koinViewModel()
 
@@ -90,7 +104,7 @@ fun App(
                 val isOnboarding = currentDestination.route?.contains("Onboarding") == true
                 
                 if (!isOnboarding) {
-                     delay(300)
+                    delay(300)
                     navController.navigateWithFlags(Screen.BreakNotification)
                     onBreakNotificationNavigated()
                 }
@@ -234,6 +248,7 @@ fun App(
         ) {
             composable<Screen.Onboarding> { backStackEntry ->
                 val route = backStackEntry.toRoute<Screen.Onboarding>()
+                println("is from settings${route.isFromSettings}")
                 OnboardingScreen(
                     onNavigateToHome = {
                         if (route.isFromSettings) {
@@ -402,5 +417,6 @@ fun App(
                 )
             }
         }
+    }
     }
 }

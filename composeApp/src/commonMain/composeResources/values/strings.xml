@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_title_1">ПРИВЕТ!</string>
+    <string name="onboarding_desc_1">Если ты зашел сюда, значит, ты хочешь научиться классно отдыхать!</string>
+    <string name="onboarding_btn_1">Продолжить</string>
+
+    <string name="onboarding_title_2">МЫ\nНАПОМИНАЕМ\nО ПАУЗАХ!</string>
+    <string name="onboarding_desc_2">Поможем тебе сохранять фокус и энергию, встраивая короткие перерывы в твой день.</string>
+    <string name="onboarding_btn_2">А что еще?</string>
+
+    <string name="onboarding_title_3"></string>
+    <string name="onboarding_desc_3">С помощью приложения ты можешь планировать своё время и находить идеи для отдыха, а мы будем тебе помогать отдыхать, присылая напоминания о перерыве!</string>
+    <string name="onboarding_btn_3">Погнали</string>
+
+    <string name="onboarding_out_of">из</string>
+
+    <string name="break_notification_passed">Этот перерыв уже прошел</string>
+    <string name="break_notification_start_rest">Начать отдыхать</string>
+    <string name="break_notification_time_to_break">Время сделать перерыв!</string>
+    <string name="break_notification_postpone">Отложить перерыв</string>
+    <string name="break_notification_cancel">Отменить перерыв</string>
+
+    <string name="break_result_duration" formatted="false">Перерыв\n%1$d минут!</string>
+    <string name="break_result_what_to_do">Чем заняться?</string>
+    <string name="break_result_postponed">Перерыв\nотложен</string>
+    <string name="break_result_cancelled">Перерыв\nотменен</string>
+
+    <string name="calendar_day_mo">пн</string>
+    <string name="calendar_day_tu">вт</string>
+    <string name="calendar_day_we">ср</string>
+    <string name="calendar_day_th">чт</string>
+    <string name="calendar_day_fr">пт</string>
+    <string name="calendar_day_sa">сб</string>
+    <string name="calendar_day_su">вс</string>
+
+    <string name="home_time_to_rest">Пора отдыхать!</string>
+    <string name="home_greeting">ПРИВЕТ!</string>
+    <string name="home_what_to_do">Чем займемся?</string>
+    <string name="home_survey_text">Что вы думаете о текущей версии приложения? Поделитесь с нами чтобы мы могли стать лучше!</string>
+    <string name="home_take_survey">Пройти опрос!</string>
+    <string name="home_schedule_title">Расписание</string>
+    <string name="home_schedule_desc">Заполни задачи, а мы поможем выстроить расписание перерывов!</string>
+    <string name="home_rest_title">Отдых</string>
+    <string name="home_rest_desc">Подберем способ расслабиться на любой вкус!</string>
+    <string name="home_stats_title">Статистика</string>
+    <string name="home_stats_desc">Здесь хранятся ваши заметки о самочувствии и достижения!</string>
+    <string name="home_record_mood">Сделать запись о самочувствии</string>
+
+    <string name="pomodoro_select_title">Выбери вид\nтайм-менеджмента</string>
+    <string name="pomodoro_test">Test Pomodoro</string>
+    <string name="pomodoro_classic">Pomodoro 25/5</string>
+    <string name="pomodoro_extended">Pomodoro 52/17</string>
+    <string name="pomodoro_deep_work">Pomodoro 90/30</string>
+    <string name="pomodoro_desc" formatted="false">Рабочий слот %1$d минуты\nотдых - %2$d минут</string>
+
+    <string name="rest_activities_all_viewed">Вы посмотрели все активности этой категории</string>
+    <string name="rest_activities_restart">Начать заново</string>
+    <string name="rest_activities_open_instruction">Открыть инструкцию</string>
+    <string name="rest_activities_done">Готово!</string>
+    <string name="rest_activities_next">Далее</string>
+    <string name="rest_activities_duration" formatted="false">ДЛИТЕЛЬНОСТЬ: %1$d-%2$d минут</string>
+    <string name="rest_activities_loading">Загружаем активности...</string>
+    <string name="rest_activities_load_error">Не удалось загрузить активности</string>
+
+    <string name="rest_select_title">Выбери вид отдыха</string>
+    <string name="rest_type_calm">Спокойный</string>
+    <string name="rest_type_active">Активный</string>
+    <string name="rest_type_creative">Творческий</string>
+    <string name="rest_desc_calm">Если испытываешь стресс или беспокойство</string>
+    <string name="rest_desc_active">Если хочешь немного взбодриться</string>
+    <string name="rest_desc_creative">Если мечтаешь и фантазируешь, не зная куда деть свои идеи</string>
+
+    <string name="schedule_empty_state">В расписании на этот день пока\nничего нет, давай его дополним</string>
+    <string name="schedule_add_task">Добавить задачу</string>
+    <string name="schedule_new_slot">Новый слот</string>
+    <string name="schedule_edit_slot">Редактирование</string>
+    <string name="schedule_task_name_hint">Название задачи</string>
+    <string name="schedule_allow_break">Можно встроить перерыв</string>
+    <string name="schedule_error_empty_name">Введите название задачи</string>
+    <string name="schedule_error_invalid_start">Некорректное время начала</string>
+    <string name="schedule_error_empty_start">Укажите время начала</string>
+    <string name="schedule_error_invalid_end">Некорректное время окончания</string>
+    <string name="schedule_error_empty_end">Укажите время окончания</string>
+    <string name="schedule_error_start_after_end">Время начала должно быть раньше времени окончания</string>
+    <string name="schedule_error_overlap">Задача пересекается с другими задачами</string>
+    <string name="schedule_close_desc">Закрыть</string>
+    <string name="schedule_delete_desc">Удалить</string>
+
+    <string name="settings_title">НАСТРОЙКИ</string>
+    <string name="settings_change_pomodoro">Поменять тип Pomodoro</string>
+    <string name="settings_show_onboarding">Показать онбординг</string>
+
+    <string name="stats_title">СТАТИСТИКА</string>
+    <string name="stats_record_mood_btn">Сделать запись о самочувствии</string>
+    <string name="stats_empty_schedule_title">Пришло время настроить расписание отдыха!</string>
+    <string name="stats_setup_schedule_btn">Настроить расписание перерывов</string>
+    <string name="stats_completion_good">Отлично! Продолжай в том же духе. Каждый перерыв помогает заботиться о себе!</string>
+    <string name="stats_completion_great">Продолжай в том же духе, мы тобой гордимся!</string>
+    <string name="stats_completion_perfect">Ты настоящий мастер заботы о себе!</string>
+    <string name="stats_trend_positive">Похоже, короткие перерывы помогают тебе лучше отдыхать!</string>
+    <string name="stats_trend_negative">Похоже, ты чувствуешь себя уставшим в последнее время. Может, пришло время отдохнуть подольше или проконсультироваться с кем-нибудь?</string>
+    <string name="stats_trend_neutral">Продолжай соблюдать баланс активности и отдыха, а мы тебе поможем!</string>
+
+    <string name="stats_you_rested">Ты отдохнул</string>
+    <string name="stats_times">раз</string>
+    <string name="stats_mood_chart_title">График самочувствия</string>
+
+    <string name="notification_permission_title">Разрешение на уведомления</string>
+    <string name="notification_permission_desc">Чтобы напоминать вам об отдыхе приложению необходим доступ к уведомлениям. Пожалуйста, включите их в настройках</string>
+    <string name="notification_permission_later">Позже</string>
+    <string name="notification_permission_settings">В настройки</string>
+
+    <string name="overlap_warning_title">Изменение расписания</string>
+    <string name="overlap_warning_desc">Этот отдых накладывается на рабочие задачи. Они будут автоматически сокращены. Продолжить?</string>
+    <string name="overlap_warning_cancel">Отмена</string>
+    <string name="overlap_warning_continue">Продолжить</string>
+
+    <string name="survey_dialog_title">Новая запись настроения</string>
+    <string name="survey_dialog_question">Как ты себя чуствуешь?</string>
+    <string name="task_card_untitled">Без названия</string>
+    <string name="time_range_from">от</string>
+    <string name="time_range_to">до</string>
+    <string name="time_picker_title">Выберите время</string>
+    <string name="time_picker_cancel">Отмена</string>
+    <string name="time_picker_save">Сохранить</string>
+
+    <string name="work_rest_switch_work">работа</string>
+    <string name="work_rest_switch_rest">отдых</string>
+
+    <string name="month_genitive_january">Января</string>
+    <string name="month_genitive_february">Февраля</string>
+    <string name="month_genitive_march">Марта</string>
+    <string name="month_genitive_april">Апреля</string>
+    <string name="month_genitive_may">Мая</string>
+    <string name="month_genitive_june">Июня</string>
+    <string name="month_genitive_july">Июля</string>
+    <string name="month_genitive_august">Августа</string>
+    <string name="month_genitive_september">Сентября</string>
+    <string name="month_genitive_october">Октября</string>
+    <string name="month_genitive_november">Ноября</string>
+    <string name="month_genitive_december">Декабря</string>
+
+    <string name="month_january">Январь</string>
+    <string name="month_february">Февраль</string>
+    <string name="month_march">Март</string>
+    <string name="month_april">Апрель</string>
+    <string name="month_may">Май</string>
+    <string name="month_june">Июнь</string>
+    <string name="month_july">Июль</string>
+    <string name="month_august">Август</string>
+    <string name="month_september">Сентябрь</string>
+    <string name="month_october">Октябрь</string>
+    <string name="month_november">Ноябрь</string>
+    <string name="month_december">Декабрь</string>
+
+    <string name="day_monday">Понедельник</string>
+    <string name="day_tuesday">Вторник</string>
+    <string name="day_wednesday">Среда</string>
+    <string name="day_thursday">Четверг</string>
+    <string name="day_friday">Пятница</string>
+    <string name="day_saturday">Суббота</string>
+    <string name="day_sunday">Воскресенье</string>
+
+    <string name="notification_time_to_rest_title">Пришло время отдохнуть!</string>
+    <string name="notification_time_to_rest_desc">Давай на минутку выйдем из потока — тело и мозг скажут спасибо</string>
+    <string name="notification_break_ended_title">Перерыв окончен!</string>
+    <string name="notification_break_ended_desc">Пора возвращаться к задачам</string>
+    <string name="settings_language">Поменять язык</string>
+    <string name="language_select_title">Выберите язык</string>
+    <string name="language_system">Как в системе</string>
+    <string name="language_ru">Русский</string>
+    <string name="language_en">English</string>
+</resources>

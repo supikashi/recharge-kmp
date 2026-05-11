@@ -18,7 +18,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.supikashi.recharge.theme.AppTheme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.work_rest_switch_rest
+import recharge.composeapp.generated.resources.work_rest_switch_work
 
 @Composable
 fun WorkRestSwitch(
@@ -66,7 +70,7 @@ fun WorkRestSwitch(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "работа",
+                    text = stringResource(Res.string.work_rest_switch_work),
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (isWork) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground
                 )
@@ -83,7 +87,7 @@ fun WorkRestSwitch(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "отдых",
+                    text = stringResource(Res.string.work_rest_switch_rest),
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (!isWork) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground
                 )

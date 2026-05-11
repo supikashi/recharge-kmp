@@ -34,9 +34,15 @@ import com.supikashi.recharge.database.Task
 import com.supikashi.recharge.theme.AppTheme
 import com.supikashi.recharge.theme.mascotPrimary
 import com.supikashi.recharge.viewmodels.BreakNotificationViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.break_notification_cancel
+import recharge.composeapp.generated.resources.break_notification_passed
+import recharge.composeapp.generated.resources.break_notification_postpone
+import recharge.composeapp.generated.resources.break_notification_start_rest
+import recharge.composeapp.generated.resources.break_notification_time_to_break
 import recharge.composeapp.generated.resources.calendar
 import recharge.composeapp.generated.resources.home
 
@@ -85,7 +91,7 @@ fun BreakNotificationScreen(
                         Spacer(modifier = Modifier.weight(1f))
 
                         Text(
-                            text = "Этот перерыв уже прошел",
+                            text = stringResource(Res.string.break_notification_passed),
                             style = MaterialTheme.typography.titleMedium,
                             textAlign = TextAlign.Center,
                         )
@@ -105,7 +111,7 @@ fun BreakNotificationScreen(
                             )
                         ) {
                             Text(
-                                text = "Начать отдыхать",
+                                text = stringResource(Res.string.break_notification_start_rest),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -114,7 +120,7 @@ fun BreakNotificationScreen(
                     }
                     else -> {
                         Text(
-                            text = "Время сделать перерыв!",
+                            text = stringResource(Res.string.break_notification_time_to_break),
                             style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Center,
                         )
@@ -137,7 +143,7 @@ fun BreakNotificationScreen(
                             )
                         ) {
                             Text(
-                                text = "Начать отдыхать",
+                                text = stringResource(Res.string.break_notification_start_rest),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -156,7 +162,7 @@ fun BreakNotificationScreen(
                             )
                         ) {
                             Text(
-                                text = "Отложить перерыв",
+                                text = stringResource(Res.string.break_notification_postpone),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -174,7 +180,7 @@ fun BreakNotificationScreen(
                             )
                         ) {
                             Text(
-                                text = "Отменить перерыв",
+                                text = stringResource(Res.string.break_notification_cancel),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }

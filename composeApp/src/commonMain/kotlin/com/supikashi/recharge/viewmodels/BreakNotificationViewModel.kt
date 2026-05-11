@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.getString
+import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.notification_break_ended_desc
+import recharge.composeapp.generated.resources.notification_break_ended_title
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -76,8 +80,8 @@ class BreakNotificationViewModel(
                 val endNotification = ExactBreakNotification(
                     id = -breakItem.id,
                     taskId = breakItem.taskId,
-                    title = "Перерыв окончен!",
-                    message = "Пора возвращаться к задачам",
+                    title = getString(Res.string.notification_break_ended_title),
+                    message = getString(Res.string.notification_break_ended_desc),
                     timeMillis = exactEndMillis
                 )
                 

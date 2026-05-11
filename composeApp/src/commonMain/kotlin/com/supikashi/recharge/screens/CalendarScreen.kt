@@ -56,16 +56,22 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.arrow_back
 import recharge.composeapp.generated.resources.arrow_left
+import recharge.composeapp.generated.resources.calendar_day_fr
+import recharge.composeapp.generated.resources.calendar_day_mo
+import recharge.composeapp.generated.resources.calendar_day_sa
+import recharge.composeapp.generated.resources.calendar_day_su
+import recharge.composeapp.generated.resources.calendar_day_th
+import recharge.composeapp.generated.resources.calendar_day_tu
+import recharge.composeapp.generated.resources.calendar_day_we
 import recharge.composeapp.generated.resources.close_circle
 import recharge.composeapp.generated.resources.home
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-
-private val WEEK_DAYS = listOf("пн", "вт", "ср", "чт", "пт", "сб", "вс")
 
 @OptIn(InternalResourceApi::class)
 @Composable
@@ -79,6 +85,15 @@ fun CalendarScreen(
         mutableStateOf(LocalDate(initialDate.year, initialDate.month, 1)) 
     }
     
+    val weekDays = listOf(
+        stringResource(Res.string.calendar_day_mo),
+        stringResource(Res.string.calendar_day_tu),
+        stringResource(Res.string.calendar_day_we),
+        stringResource(Res.string.calendar_day_th),
+        stringResource(Res.string.calendar_day_fr),
+        stringResource(Res.string.calendar_day_sa),
+        stringResource(Res.string.calendar_day_su)
+    )
     
     val days = remember(displayedMonthFirstDay) {
         val daysInMonth = displayedMonthFirstDay.plus(1, DateTimeUnit.MONTH)
@@ -173,7 +188,7 @@ fun CalendarScreen(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    WEEK_DAYS.forEach { day ->
+                    weekDays.forEach { day ->
                         Text(
                             text = day,
                             modifier = Modifier.requiredWidth(30.dp),

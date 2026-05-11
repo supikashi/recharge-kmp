@@ -26,6 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.supikashi.recharge.viewmodels.DailyBreakStats
+import org.jetbrains.compose.resources.stringResource
+import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.stats_times
+import recharge.composeapp.generated.resources.stats_you_rested
 
 @Composable
 fun BreakProgressChart(
@@ -100,7 +104,7 @@ fun BreakProgressChart(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "Ты отдохнул",
+                text = stringResource(Res.string.stats_you_rested),
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
@@ -108,7 +112,7 @@ fun BreakProgressChart(
                 style = MaterialTheme.typography.headlineMedium,
             )
             Text(
-                text = "раз",
+                text = stringResource(Res.string.stats_times),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

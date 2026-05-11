@@ -46,9 +46,11 @@ import com.supikashi.recharge.database.TaskWithBreaks
 import com.supikashi.recharge.utils.formatMinutesToTime
 import com.supikashi.recharge.theme.AppTheme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.clock
+import recharge.composeapp.generated.resources.task_card_untitled
 import recharge.composeapp.generated.resources.trash
 import kotlin.math.roundToInt
 
@@ -108,7 +110,7 @@ fun TaskCard(
                 .padding(vertical = 10.dp)
         ) {
             Text(
-                text = task.name.ifEmpty { "Без названия" },
+                text = task.name.ifEmpty { stringResource(Res.string.task_card_untitled) },
                 style = MaterialTheme.typography.bodyMedium,
                 color = content,
                 modifier = Modifier.padding(horizontal = 10.dp)

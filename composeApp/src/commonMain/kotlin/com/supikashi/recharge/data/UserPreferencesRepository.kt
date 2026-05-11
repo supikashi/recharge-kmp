@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
+import com.supikashi.recharge.models.AppLanguage
 import com.supikashi.recharge.models.PomodoroType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -22,6 +23,18 @@ class UserPreferencesRepository(
         private val FIRST_LAUNCH_EPOCH_MILLIS_KEY = longPreferencesKey("first_launch_epoch_millis")
         private val SELECTED_POMODORO_TYPE_KEY = intPreferencesKey("selected_pomodoro_type")
         private val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_completed")
+        private val APP_LANGUAGE_KEY = intPreferencesKey("app_language")
+    }
+
+    val appLanguage: Flow<AppLanguage> = dataStore.data
+        .map { preferences ->
+            preferences[APP_LANGUAGE_KEY]?.let { AppLanguage.entries.getOrNull(it) } ?: AppLanguage.SYSTEM
+        }
+
+    suspend fun setAppLanguage(language: AppLanguage) {
+        dataStore.edit { preferences ->
+            preferences[APP_LANGUAGE_KEY] = language.ordinal
+        }
     }
 
     @OptIn(ExperimentalTime::class)
@@ -102,6 +115,7 @@ class UserPreferencesRepository(
             preferences.remove(FIRST_LAUNCH_EPOCH_MILLIS_KEY)
             preferences.remove(SELECTED_POMODORO_TYPE_KEY)
             preferences.remove(ONBOARDING_COMPLETED_KEY)
+            preferences.remove(APP_LANGUAGE_KEY)
         }
     }
 }

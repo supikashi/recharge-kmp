@@ -83,6 +83,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
@@ -91,6 +92,21 @@ import recharge.composeapp.generated.resources.calendar
 import recharge.composeapp.generated.resources.close_circle
 import recharge.composeapp.generated.resources.home
 import recharge.composeapp.generated.resources.mascot
+import recharge.composeapp.generated.resources.schedule_add_task
+import recharge.composeapp.generated.resources.schedule_allow_break
+import recharge.composeapp.generated.resources.schedule_close_desc
+import recharge.composeapp.generated.resources.schedule_delete_desc
+import recharge.composeapp.generated.resources.schedule_edit_slot
+import recharge.composeapp.generated.resources.schedule_empty_state
+import recharge.composeapp.generated.resources.schedule_error_empty_end
+import recharge.composeapp.generated.resources.schedule_error_empty_name
+import recharge.composeapp.generated.resources.schedule_error_empty_start
+import recharge.composeapp.generated.resources.schedule_error_invalid_end
+import recharge.composeapp.generated.resources.schedule_error_invalid_start
+import recharge.composeapp.generated.resources.schedule_error_overlap
+import recharge.composeapp.generated.resources.schedule_error_start_after_end
+import recharge.composeapp.generated.resources.schedule_new_slot
+import recharge.composeapp.generated.resources.schedule_task_name_hint
 import recharge.composeapp.generated.resources.tick_circle
 import recharge.composeapp.generated.resources.trash
 import kotlin.time.Clock
@@ -240,8 +256,9 @@ fun ScheduleScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "В расписании на этот день пока\nничего нет, давай его дополним",
-                                style = MaterialTheme.typography.bodyMedium
+                                text = stringResource(Res.string.schedule_empty_state),
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center
                             )
                             Icon(
                                 painter = painterResource(Res.drawable.mascot),
@@ -284,7 +301,7 @@ fun ScheduleScreen(
                         colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground)
                     ) {
                         Text(
-                            text = "Добавить задачу",
+                            text = stringResource(Res.string.schedule_add_task),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -370,11 +387,11 @@ private fun NewSlot(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.close_circle),
-                            contentDescription = "Назад",
+                            contentDescription = stringResource(Res.string.schedule_close_desc),
                         )
                     }
                     Text(
-                        text = if (newSlot.id == 0) "Новый слот" else "Редактирование",
+                        text = if (newSlot.id == 0) stringResource(Res.string.schedule_new_slot) else stringResource(Res.string.schedule_edit_slot),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center,
@@ -388,7 +405,7 @@ private fun NewSlot(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.close_circle),
-                            contentDescription = "Назад",
+                            contentDescription = stringResource(Res.string.schedule_close_desc),
                             tint = Color.Transparent
                         )
                     }
@@ -462,7 +479,7 @@ private fun NewSlot(
                         ) {
                             if (newSlot.name.isEmpty()) {
                                 Text(
-                                    text = "Название задачи",
+                                    text = stringResource(Res.string.schedule_task_name_hint),
                                     style = LocalTextStyle.current.copy(
                                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                                         textAlign = TextAlign.Start
@@ -499,7 +516,7 @@ private fun NewSlot(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp)
                 ) {
                     Text(
-                        text = "Можно встроить перерыв",
+                        text = stringResource(Res.string.schedule_allow_break),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Checkbox(
@@ -533,23 +550,23 @@ private fun NewSlot(
                 if (hasAnyInput && !isValid) {
                     val errors = buildList {
                         if (newSlot.name.isBlank()) {
-                            add("Введите название задачи")
+                            add(stringResource(Res.string.schedule_error_empty_name))
                         }
                         if (fromMinutes == null && fromTime.isNotBlank()) {
-                            add("Некорректное время начала")
+                            add(stringResource(Res.string.schedule_error_invalid_start))
                         } else if (fromMinutes == null) {
-                            add("Укажите время начала")
+                            add(stringResource(Res.string.schedule_error_empty_start))
                         }
                         if (toMinutes == null && toTime.isNotBlank()) {
-                            add("Некорректное время окончания")
+                            add(stringResource(Res.string.schedule_error_invalid_end))
                         } else if (toMinutes == null) {
-                            add("Укажите время окончания")
+                            add(stringResource(Res.string.schedule_error_empty_end))
                         }
                         if (fromMinutes != null && toMinutes != null && fromMinutes >= toMinutes) {
-                            add("Время начала должно быть раньше времени окончания")
+                            add(stringResource(Res.string.schedule_error_start_after_end))
                         }
                         if (fromMinutes != null && toMinutes != null && fromMinutes < toMinutes && hasAnyOverlap) {
-                            add("Задача пересекается с другими задачами")
+                            add(stringResource(Res.string.schedule_error_overlap))
                         }
                     }
 
@@ -579,7 +596,7 @@ private fun NewSlot(
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.trash),
-                                contentDescription = "Удалить",
+                                contentDescription = stringResource(Res.string.schedule_delete_desc),
                                 tint = Color.Red.copy(alpha = 0.8f)
                             )
                         }

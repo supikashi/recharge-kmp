@@ -1,18 +1,21 @@
 package com.supikashi.recharge.models
 
-import org.jetbrains.compose.resources.DrawableResource
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class RestType {
     ACTIVE, CALM, CREATIVE
 }
 
+@Serializable
 data class CardContent(
     val title: String,
     val description: String,
     val additional: String? = null,
-    val image: DrawableResource? = null
+    val imageId: String? = null
 )
 
+@Serializable
 data class RestActivity(
     val name: String,
     val durationMin: Int,

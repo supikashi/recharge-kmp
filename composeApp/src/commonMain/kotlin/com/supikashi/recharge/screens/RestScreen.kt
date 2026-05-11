@@ -33,9 +33,17 @@ import com.supikashi.recharge.components.TopBar
 import com.supikashi.recharge.models.PomodoroType
 import com.supikashi.recharge.models.RestType
 import com.supikashi.recharge.theme.mascotPrimary
+import org.jetbrains.compose.resources.stringResource
 import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.arrow_back
 import recharge.composeapp.generated.resources.home
+import recharge.composeapp.generated.resources.rest_desc_active
+import recharge.composeapp.generated.resources.rest_desc_calm
+import recharge.composeapp.generated.resources.rest_desc_creative
+import recharge.composeapp.generated.resources.rest_select_title
+import recharge.composeapp.generated.resources.rest_type_active
+import recharge.composeapp.generated.resources.rest_type_calm
+import recharge.composeapp.generated.resources.rest_type_creative
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +67,7 @@ fun RestScreen(
             )
             
             Text(
-                text = "Выбери вид отдыха",
+                text = stringResource(Res.string.rest_select_title),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(top = 16.dp, bottom = 32.dp),
                 textAlign = TextAlign.Center
@@ -136,9 +144,9 @@ private fun RestTypeItem(
         ) {
             Text(
                 text = when (type) {
-                    RestType.CALM -> "Спокойный"
-                    RestType.ACTIVE -> "Активный"
-                    RestType.CREATIVE -> "Творческий"
+                    RestType.CALM -> stringResource(Res.string.rest_type_calm)
+                    RestType.ACTIVE -> stringResource(Res.string.rest_type_active)
+                    RestType.CREATIVE -> stringResource(Res.string.rest_type_creative)
                 },
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium
@@ -146,9 +154,9 @@ private fun RestTypeItem(
 
             Text(
                 text = when (type) {
-                    RestType.CALM -> "Если испытываешь стресс или беспокойство"
-                    RestType.ACTIVE -> "Если хочешь немного взбодриться"
-                    RestType.CREATIVE -> "Если мечтаешь и фантазируешь, не зная куда деть свои идеи"
+                    RestType.CALM -> stringResource(Res.string.rest_desc_calm)
+                    RestType.ACTIVE -> stringResource(Res.string.rest_desc_active)
+                    RestType.CREATIVE -> stringResource(Res.string.rest_desc_creative)
                 },
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,

@@ -1,0 +1,306 @@
+{
+  "ACTIVE": [
+    {
+      "name": "Lateral bends",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Lateral bends",
+          "description": "For those moments when you feel you have been sitting too long and your back needs a little help.\n\nThis helps bring more oxygen into the body and ease tension in the neck: more parts of the body start taking part in breathing."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Sit in an armchair or on a chair and place both feet together on the floor.",
+          "imageId": "active_1_1"
+        },
+        {
+          "title": "What to do:",
+          "description": "2. As you inhale, bend to the right, stretching your left side and filling the ribs on the left with air.",
+          "imageId": "active_1_2"
+        },
+        {
+          "title": "What to do:",
+          "description": "3. At the deepest point of the movement, start exhaling from the lower belly and smoothly return to the starting position.",
+          "imageId": "active_1_3"
+        },
+        {
+          "title": "What to do:",
+          "description": "4. Repeat the exercise, bending to the other side.",
+          "imageId": "active_1_4"
+        }
+      ]
+    },
+    {
+      "name": "Thoracic flexion and extension",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Thoracic flexion and extension",
+          "description": "This exercise stretches and tones the chest muscles and the area between the shoulder blades. During seated work, the chest often becomes tight and shortened, while the area between the shoulder blades gets stretched and tense. This warm-up helps balance those muscles and position the shoulders more evenly."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Place your feet shoulder-width apart and clasp your hands behind your back.\nAs you inhale, reach your hands upward without letting your chest drop forward.",
+          "imageId": "active_2_1"
+        },
+        {
+          "title": "What to do:",
+          "description": "2. As you exhale, clasp your palms in front of your chest and reach them forward while reaching the area between your shoulder blades backward.",
+          "imageId": "active_2_2"
+        }
+      ]
+    },
+    {
+      "name": "Neck relaxation",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Neck relaxation",
+          "description": "When you sit for a long time, the trapezius muscle and the muscles that lift the shoulder blades often become tight.\n\nThis exercise helps relax them and bring the shoulders back to a natural position."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Place your right palm on your left shoulder, and turn your left ear upward.",
+          "imageId": "active_3_1"
+        },
+        {
+          "title": "What to do:",
+          "description": "2. As you exhale, gently pull your head, engaging the side and back surfaces of the neck.",
+          "imageId": "active_3_2"
+        },
+        {
+          "title": "What to do:",
+          "description": "3. As you inhale, return to the starting position and relax the muscles. After several repetitions, switch sides.",
+          "imageId": "active_3_3"
+        }
+      ]
+    },
+    {
+      "name": "Rib stretch",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Rib stretch",
+          "description": "When you sit, the chest often becomes compressed and breathing gets shallow. The body receives less oxygen, you get tired faster, and concentration drops.\n\nThis exercise relaxes the intercostal muscles and diaphragm and helps deepen your inhale."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Place your feet shoulder-width apart and clasp your elbows in front of your chest.",
+          "imageId": "active_4_1"
+        },
+        {
+          "title": "What to do:",
+          "description": "2. As you inhale, stretch the ribs on the left side upward without losing tension on the left.",
+          "imageId": "active_4_2"
+        },
+        {
+          "title": "What to do:",
+          "description": "3. Pull the ribs on the right side upward. As you exhale, keeping your sides engaged, lower your shoulders and reach forward with your collarbones.",
+          "imageId": "active_4_3"
+        }
+      ]
+    },
+    {
+      "name": "Pelvic tilts",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Pelvic tilts",
+          "description": "When you sit, the lower back barely moves, so after long hours in a chair the back becomes tense and tired.\n\nPelvic movements let the muscles lengthen and regain tone. They also take pressure off the lower back, while the abs begin to support the spine, making it easier to sit upright."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Move away from the back of the chair so there is a little space between it and your lower back. Place your feet on the floor.",
+          "imageId": "active_5_1"
+        },
+        {
+          "title": "What to do:",
+          "description": "2. As you inhale, reach the top of your head upward and gently arch your lower back forward.",
+          "imageId": "active_5_2"
+        },
+        {
+          "title": "What to do:",
+          "description": "3. As you exhale, reach your back toward the chair so it rounds. You can let your head drop forward.",
+          "imageId": "active_5_3"
+        }
+      ]
+    }
+  ],
+  "CALM": [
+    {
+      "name": "Anchoring in the present",
+      "durationMin": 10,
+      "durationMax": 15,
+      "steps": [
+        {
+          "title": "Anchoring in the present",
+          "description": "For times when you feel disconnected from reality and it is time to come back down to earth."
+        },
+        {
+          "title": "What to do:",
+          "description": "Find:\n\n5 things you can see.\n\n4 things you can touch.\n\n3 sounds you can hear.\n\n2 smells you can notice.\n\n1 taste you can feel or remember."
+        }
+      ]
+    },
+    {
+      "name": "Focus on sensations",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Focus on sensations",
+          "description": "For moments when you know your body needs special attention right now."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Notice how your feet stand on the floor and how your hands touch the surface.\n\n2. Notice where there is tension in the body and try to relax those areas.\n\n3. Make 2-3 gentle circular movements with your shoulders and neck."
+        }
+      ]
+    },
+    {
+      "name": "Observing the space",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Observing the space",
+          "description": "For those who find a connection with themselves through the place they are in."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Slowly look around the room, noticing small details: wall colors, object textures, light and shadow.\n\n2. Try to notice 5 things you had not seen before."
+        }
+      ]
+    },
+    {
+      "name": "Mindful breathing",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Mindful breathing",
+          "description": "For those who realize that even something as simple as breathing is a skill."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Sit comfortably and close your eyes.\n\n2. Take a deep breath in through your nose, feeling the air fill your lungs.\n\n3. Hold your breath for 2-3 seconds, then slowly exhale through your mouth.\n\n4. Repeat 5-7 times, paying attention only to the breathing process."
+        }
+      ]
+    },
+    {
+      "name": "Gratitude list",
+      "durationMin": 10,
+      "durationMax": 15,
+      "steps": [
+        {
+          "title": "Gratitude list",
+          "description": "If you realize you have been criticizing yourself for too long, it is time to change that."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Think about what you are grateful to yourself for right now.\n\n2. Write down 3-5 things by hand on paper; this is very important.\n\n3. Try to feel how it fills you with warmth.",
+          "additional": "*For a stronger positive effect, it is recommended to do this regularly."
+        }
+      ]
+    },
+    {
+      "name": "Slow handwriting",
+      "durationMin": 10,
+      "durationMax": 15,
+      "steps": [
+        {
+          "title": "Slow handwriting",
+          "description": "Sometimes nothing is harder than describing your feelings. This is exactly the right time to practice."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Take a sheet of paper and a pen, and write a couple of lines about what you feel right now.\n\n2. You can simply describe what you see in front of you.\n\n3. Write slowly, enjoying every movement of your hand."
+        }
+      ]
+    }
+  ],
+  "CREATIVE": [
+    {
+      "name": "Quick sketches",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Quick sketches",
+          "description": "For those who have a free minute and a pencil nearby."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Take a sheet of paper and a pen or pencil.\n\n2. Draw something simple: a smiley face, a flower, a geometric pattern, or a funny character.\n\n3. You can also make a tiny sketch of an object you see in front of you."
+        }
+      ]
+    },
+    {
+      "name": "Creating patterns",
+      "durationMin": 5,
+      "durationMax": 10,
+      "steps": [
+        {
+          "title": "Creating patterns",
+          "description": "If you suddenly feel like exploring the art of Zentangle drawing."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Start drawing any repeating lines, curls, or geometric shapes.\n\n2. Let your hand move freely, without a specific plan.",
+          "additional": "*This process helps you relax and switch gears a little."
+        }
+      ]
+    },
+    {
+      "name": "Short poems",
+      "durationMin": 10,
+      "durationMax": 15,
+      "steps": [
+        {
+          "title": "Short poems",
+          "description": "For beginner poets."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Think of a rhyme for a random word, for example, \"inspiration\" and \"creation\".\n\n2. Come up with a few more rhymes like that and try to make a short poem or haiku from them.",
+          "additional": "*You can make it playful or philosophical."
+        }
+      ]
+    },
+    {
+      "name": "Creating a character",
+      "durationMin": 10,
+      "durationMax": 15,
+      "steps": [
+        {
+          "title": "Creating a character",
+          "description": "For those who have dreamed of inventing heroes for their own stories."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Write down 3 random qualities, for example, \"lazy, dreamy, afraid of water\".\n\n2. Imagine who it could be: a person, an animal, or a fantasy creature.\n\n3. Add details: a name, where they live, and what they like to do."
+        }
+      ]
+    },
+    {
+      "name": "Origami and crafts",
+      "durationMin": 15,
+      "durationMax": 20,
+      "steps": [
+        {
+          "title": "Origami and crafts",
+          "description": "For those who have not made anything with their hands for years and finally feel inspired."
+        },
+        {
+          "title": "What to do:",
+          "description": "1. Make a simple paper figure, such as a crane or a boat.\n\n2. Or try creating a small sculpture from materials at hand, like paper clips, paper, or an eraser.\n\n3. You can choose a theme and use it as inspiration for the composition."
+        }
+      ]
+    }
+  ]
+}

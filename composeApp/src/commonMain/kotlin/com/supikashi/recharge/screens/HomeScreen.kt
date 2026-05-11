@@ -66,6 +66,7 @@ import com.supikashi.recharge.theme.mascotPrimary
 import com.supikashi.recharge.viewmodels.HomeViewModel
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import recharge.composeapp.generated.resources.Res
@@ -76,6 +77,18 @@ import recharge.composeapp.generated.resources.frame_2
 import recharge.composeapp.generated.resources.frame_2_png
 import recharge.composeapp.generated.resources.frame_3
 import recharge.composeapp.generated.resources.frame_3_png
+import recharge.composeapp.generated.resources.home_greeting
+import recharge.composeapp.generated.resources.home_record_mood
+import recharge.composeapp.generated.resources.home_rest_desc
+import recharge.composeapp.generated.resources.home_rest_title
+import recharge.composeapp.generated.resources.home_schedule_desc
+import recharge.composeapp.generated.resources.home_schedule_title
+import recharge.composeapp.generated.resources.home_stats_desc
+import recharge.composeapp.generated.resources.home_stats_title
+import recharge.composeapp.generated.resources.home_survey_text
+import recharge.composeapp.generated.resources.home_take_survey
+import recharge.composeapp.generated.resources.home_time_to_rest
+import recharge.composeapp.generated.resources.home_what_to_do
 import recharge.composeapp.generated.resources.notification
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -225,7 +238,7 @@ fun HomeScreenContent(
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "Пора отдыхать!",
+                                text = stringResource(Res.string.home_time_to_rest),
                                 style = MaterialTheme.typography.titleMedium,
                             )
                         }
@@ -233,12 +246,12 @@ fun HomeScreenContent(
                 }
             }
             Text(
-                text = "ПРИВЕТ!",
+                text = stringResource(Res.string.home_greeting),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
             Text(
-                text = "Чем займемся?",
+                text = stringResource(Res.string.home_what_to_do),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
@@ -268,7 +281,7 @@ fun HomeScreenContent(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "Что вы думаете о текущей версии приложения? Поделитесь с нами чтобы мы могли стать лучше!",
+                            text = stringResource(Res.string.home_survey_text),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onBackground,
                             textAlign = TextAlign.Center
@@ -283,7 +296,7 @@ fun HomeScreenContent(
                             modifier = Modifier.height(30.dp)
                         ) {
                             Text(
-                                text = "Пройти опрос!",
+                                text = stringResource(Res.string.home_take_survey),
                                 style = MaterialTheme.typography.labelMedium
                             )
                         }
@@ -299,8 +312,8 @@ fun HomeScreenContent(
                     ) {
                         item {
                             NavigationCard(
-                                title = "Расписание",
-                                description = "Заполни задачи, а мы поможем выстроить расписание перерывов!",
+                                title = stringResource(Res.string.home_schedule_title),
+                                description = stringResource(Res.string.home_schedule_desc),
                                 backgroundColor = MaterialTheme.colorScheme.tertiary,
                                 contentColor = MaterialTheme.colorScheme.onBackground,
                                 resource = Res.drawable.frame_1,
@@ -317,8 +330,8 @@ fun HomeScreenContent(
                         }
                         item {
                             NavigationCard(
-                                title = "Отдых",
-                                description = "Подберем способ расслабиться на любой вкус!",
+                                title = stringResource(Res.string.home_rest_title),
+                                description = stringResource(Res.string.home_rest_desc),
                                 backgroundColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onSurface,
                                 resource = Res.drawable.frame_2,
@@ -331,8 +344,8 @@ fun HomeScreenContent(
                         }
                         item {
                             NavigationCard(
-                                title = "Статистика",
-                                description = "Здесь хранятся ваши заметки о самочувствии и достижения!",
+                                title = stringResource(Res.string.home_stats_title),
+                                description = stringResource(Res.string.home_stats_desc),
                                 backgroundColor = MaterialTheme.colorScheme.secondary,
                                 contentColor = MaterialTheme.colorScheme.onBackground,
                                 resource = Res.drawable.frame_3,
@@ -353,7 +366,7 @@ fun HomeScreenContent(
                     modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 40.dp, start = 20.dp, end = 20.dp).heightIn(min = 40.dp)
                 ) {
                     Text(
-                        text = "Сделать запись о самочувствии",
+                        text = stringResource(Res.string.home_record_mood),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

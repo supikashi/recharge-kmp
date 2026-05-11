@@ -9,6 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import org.jetbrains.compose.resources.stringResource
+import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.overlap_warning_cancel
+import recharge.composeapp.generated.resources.overlap_warning_continue
+import recharge.composeapp.generated.resources.overlap_warning_desc
+import recharge.composeapp.generated.resources.overlap_warning_title
 
 @Composable
 fun OverlapWarningDialog(
@@ -29,13 +35,13 @@ fun OverlapWarningDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Изменение расписания",
+                    text = stringResource(Res.string.overlap_warning_title),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
                 Text(
-                    text = "Этот отдых накладывается на рабочие задачи. Они будут автоматически сокращены. Продолжить?",
+                    text = stringResource(Res.string.overlap_warning_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
@@ -51,7 +57,7 @@ fun OverlapWarningDialog(
                         onClick = onDismiss
                     ) {
                         Text(
-                            text = "Отмена",
+                            text = stringResource(Res.string.overlap_warning_cancel),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -64,7 +70,7 @@ fun OverlapWarningDialog(
                         onClick = onConfirm
                     ) {
                         Text(
-                            text = "Продолжить",
+                            text = stringResource(Res.string.overlap_warning_continue),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }

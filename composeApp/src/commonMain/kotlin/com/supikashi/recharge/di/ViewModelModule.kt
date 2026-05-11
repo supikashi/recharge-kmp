@@ -5,6 +5,7 @@ import com.supikashi.recharge.viewmodels.HomeViewModel
 import com.supikashi.recharge.viewmodels.NotificationViewModel
 import com.supikashi.recharge.viewmodels.OnboardingViewModel
 import com.supikashi.recharge.viewmodels.PomodoroSelectionViewModel
+import com.supikashi.recharge.viewmodels.RestActivitiesViewModel
 import com.supikashi.recharge.viewmodels.SettingsViewModel
 import com.supikashi.recharge.viewmodels.SlotViewModel
 import com.supikashi.recharge.viewmodels.StatisticsViewModel
@@ -20,4 +21,5 @@ val viewModelModule = module {
     viewModel { BreakNotificationViewModel(get(), get(), get()) }
     viewModel { StatisticsViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
+    viewModel { RestActivitiesViewModel(get()) }
 }

@@ -8,6 +8,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import org.jetbrains.compose.resources.stringResource
+import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.notification_permission_desc
+import recharge.composeapp.generated.resources.notification_permission_later
+import recharge.composeapp.generated.resources.notification_permission_settings
+import recharge.composeapp.generated.resources.notification_permission_title
 
 @Composable
 fun NotificationPermissionDialog(
@@ -28,13 +34,13 @@ fun NotificationPermissionDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Разрешение на уведомления",
+                    text = stringResource(Res.string.notification_permission_title),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
 
                 Text(
-                    text = "Чтобы напоминать вам об отдыхе приложению необходим доступ к уведомлениям. Пожалуйста, включите их в настройках",
+                    text = stringResource(Res.string.notification_permission_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
@@ -50,7 +56,7 @@ fun NotificationPermissionDialog(
                         onClick = onDismiss
                     ) {
                         Text(
-                            text = "Позже",
+                            text = stringResource(Res.string.notification_permission_later),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -63,7 +69,7 @@ fun NotificationPermissionDialog(
                         onClick = onConfirm
                     ) {
                         Text(
-                            text = "В настройки",
+                            text = stringResource(Res.string.notification_permission_settings),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }

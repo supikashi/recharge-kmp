@@ -44,6 +44,9 @@ import kotlin.collections.map
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.time.Clock
+import org.jetbrains.compose.resources.stringResource
+import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.stats_mood_chart_title
 
 val n = 30
 @Composable
@@ -97,7 +100,7 @@ fun MoodBarChart(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "График самочувствия",
+            text = stringResource(Res.string.stats_mood_chart_title),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 20.dp),
             color = MaterialTheme.colorScheme.onBackground,

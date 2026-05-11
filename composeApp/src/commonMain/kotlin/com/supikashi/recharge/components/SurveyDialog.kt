@@ -43,6 +43,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color
 import com.supikashi.recharge.theme.mascotPrimary
+import org.jetbrains.compose.resources.stringResource
+import recharge.composeapp.generated.resources.survey_dialog_question
+import recharge.composeapp.generated.resources.survey_dialog_title
 
 @Composable
 fun SurveyDialog(
@@ -53,35 +56,35 @@ fun SurveyDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(30.dp),
+            shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.secondary,
             contentColor = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(24.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Новая запись настроения",
+                    text = stringResource(Res.string.survey_dialog_title),
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 20.dp),
+                    modifier = Modifier.padding(bottom = 24.dp),
                     textAlign = TextAlign.Center
                 )
 
                 Text(
-                    text = "Как ты себя чуствуешь?",
+                    text = stringResource(Res.string.survey_dialog_question),
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(bottom = 20.dp)
+                    modifier = Modifier.padding(bottom = 24.dp)
                 )
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .padding(bottom = 20.dp),
+                        .padding(horizontal = 10.dp)
+                        .padding(bottom = 24.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     val scope = rememberCoroutineScope()
@@ -107,9 +110,7 @@ fun SurveyDialog(
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp)
-                        .padding(bottom = 20.dp),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Image(

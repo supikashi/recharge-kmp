@@ -47,8 +47,13 @@ import com.supikashi.recharge.navigation.BreakResultType
 import com.supikashi.recharge.theme.AppTheme
 import com.supikashi.recharge.theme.mascotPrimary
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import recharge.composeapp.generated.resources.Res
+import recharge.composeapp.generated.resources.break_result_cancelled
+import recharge.composeapp.generated.resources.break_result_duration
+import recharge.composeapp.generated.resources.break_result_postponed
+import recharge.composeapp.generated.resources.break_result_what_to_do
 import recharge.composeapp.generated.resources.calendar
 import recharge.composeapp.generated.resources.cancel_break_icon
 import recharge.composeapp.generated.resources.home
@@ -119,7 +124,7 @@ fun StartedBreak(
                     .fillMaxWidth().align(Alignment.Center)
             ) {
                 CircleText(
-                    titleText = "Перерыв\n$durationMinutes минут!",
+                    titleText = stringResource(Res.string.break_result_duration, durationMinutes),
                     onNavigateHome = onNavigateHome
                 )
             }
@@ -145,7 +150,7 @@ fun StartedBreak(
                     )
                 ) {
                     Text(
-                        text = "Чем заняться?",
+                        text = stringResource(Res.string.break_result_what_to_do),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -203,7 +208,7 @@ fun PostponedBreak(
             )
             Spacer(Modifier.height(5.dp))
             CircleText(
-                titleText = "Перерыв\nотложен",
+                titleText = stringResource(Res.string.break_result_postponed),
                 onNavigateHome = onNavigateHome
             )
             Spacer(Modifier.height(5.dp))
@@ -250,7 +255,7 @@ fun CancelledBreak(
             )
             Spacer(Modifier.height(5.dp))
             CircleText(
-                titleText = "Перерыв\nотменен",
+                titleText = stringResource(Res.string.break_result_cancelled),
                 onNavigateHome = onNavigateHome
             )
             Spacer(Modifier.height(5.dp))
