@@ -183,7 +183,6 @@ fun HomeScreenContent(
                         onNavigateToSettings()
                     },
                     modifier = Modifier
-                        
                         .size(50.dp)
 
                 ) {

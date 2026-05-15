@@ -57,7 +57,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.supikashi.recharge.LocalAppLocale
+import androidx.compose.ui.text.intl.Locale
 import com.supikashi.recharge.analytics.AnalyticsLogger
 import com.supikashi.recharge.components.TopBar
 import com.supikashi.recharge.models.CardContent
@@ -107,7 +107,7 @@ fun RestActivitiesScreen(
     viewModel: RestActivitiesViewModel = koinViewModel()
 ) {
     val localDensity = LocalDensity.current
-    val locale = LocalAppLocale.current
+    val locale = Locale.current.language
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var sourceHeight by remember { mutableStateOf(0.dp) }
     val shuffledActivities = remember(type, locale, uiState.activities) { uiState.activities.shuffled() }
@@ -279,7 +279,7 @@ fun RestActivitiesListScreen(
     viewModel: RestActivitiesViewModel = koinViewModel()
 ) {
     val localDensity = LocalDensity.current
-    val locale = LocalAppLocale.current
+    val locale = Locale.current.language
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var sourceHeight by remember { mutableStateOf(0.dp) }
     val originalActivities = uiState.activities
