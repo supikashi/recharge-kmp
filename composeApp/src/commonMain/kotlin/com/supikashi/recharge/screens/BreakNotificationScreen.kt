@@ -86,7 +86,7 @@ fun BreakNotificationScreen(
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 when {
-                    isLoading -> { }
+                    isLoading -> { Spacer(modifier = Modifier.weight(1f).fillMaxWidth()) }
                     currentBreak == null -> {
                         Spacer(modifier = Modifier.weight(1f))
 

@@ -86,6 +86,6 @@ class PomodoroSelectionViewModel(
     }
 
     fun getPomodoroTypes(): List<PomodoroType> {
-        return PomodoroType.entries.filter { it != PomodoroType.DEBUG }
+        return PomodoroType.entries//.filter { it != PomodoroType.DEBUG }
     }
 }

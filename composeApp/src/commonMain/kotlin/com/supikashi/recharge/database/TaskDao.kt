@@ -73,6 +73,21 @@ interface TaskDao {
     suspend fun getNextBreaksWithLimit(today: String, currentTimeMinutes: Int, limit: Int): List<Break>
 
     @Query("""
+        SELECT * FROM Break 
+        WHERE (date >= :today)
+        ORDER BY date ASC, time ASC
+    """)
+    fun getNextBreaksFlow(today: String): Flow<List<Break>>
+
+    @Transaction
+    @Query("""
+        SELECT * FROM Task 
+        WHERE (date >= :today)
+        ORDER BY date ASC, startTime ASC
+    """)
+    fun getNextTasksFlow(today: String): Flow<List<TaskWithBreaks>>
+
+    @Query("""
         SELECT COUNT(*) FROM Break 
         WHERE isNotificationScheduled = 1 
         AND (date > :today OR (date = :today AND time > :currentTimeMinutes))

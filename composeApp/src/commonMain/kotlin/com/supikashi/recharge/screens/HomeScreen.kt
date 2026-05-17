@@ -11,8 +11,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,6 +54,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -64,6 +67,7 @@ import com.supikashi.recharge.components.SurveyDialog
 import com.supikashi.recharge.theme.AppTheme
 import com.supikashi.recharge.theme.mascotPrimary
 import com.supikashi.recharge.viewmodels.HomeViewModel
+import com.supikashi.recharge.viewmodels.TimerState
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -90,6 +94,9 @@ import recharge.composeapp.generated.resources.home_take_survey
 import recharge.composeapp.generated.resources.home_time_to_rest
 import recharge.composeapp.generated.resources.home_what_to_do
 import recharge.composeapp.generated.resources.notification
+import recharge.composeapp.generated.resources.time_to_next_break
+import recharge.composeapp.generated.resources.timer_rest
+import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,6 +112,8 @@ fun HomeScreen(
     val isFirstScheduleVisit by viewModel.isFirstScheduleVisit.collectAsStateWithLifecycle()
     val shouldShowHomeSurvey by viewModel.shouldShowHomeSurvey.collectAsStateWithLifecycle()
     val currentBreak by viewModel.currentBreak.collectAsStateWithLifecycle()
+    val homeTimerState by viewModel.homeTimerState.collectAsStateWithLifecycle()
+    val currentTimeMillis by viewModel.currentTimeMillis.collectAsStateWithLifecycle()
     
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.refreshCurrentBreak()
@@ -114,6 +123,8 @@ fun HomeScreen(
         isFirstScheduleVisit = isFirstScheduleVisit,
         shouldShowHomeSurvey = shouldShowHomeSurvey,
         hasCurrentBreak = currentBreak != null,
+        homeTimerState = homeTimerState,
+        currentTimeMillis = currentTimeMillis,
         onNavigateToSchedule = onNavigateToSchedule,
         onNavigateToPomodoroSelection = onNavigateToPomodoroSelection,
         onNavigateToRest = onNavigateToRest,
@@ -130,6 +141,8 @@ fun HomeScreenContent(
     isFirstScheduleVisit: Boolean,
     shouldShowHomeSurvey: Boolean,
     hasCurrentBreak: Boolean,
+    homeTimerState: TimerState = TimerState.Idle,
+    currentTimeMillis: Long = 0L,
     onNavigateToSchedule: () -> Unit = {},
     onNavigateToPomodoroSelection: () -> Unit = {},
     onNavigateToRest: () -> Unit = {},
@@ -269,37 +282,49 @@ fun HomeScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(Modifier.height(20.dp))
-                if (shouldShowHomeSurvey) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                if ((homeTimerState !is TimerState.Idle) || shouldShowHomeSurvey) {
+
+                    MatchMaxHeightBox(
+                        showFirst = homeTimerState !is TimerState.Idle,
+                        modifier = Modifier.fillMaxWidth()
                             .padding(horizontal = 20.dp)
                             .clip(RoundedCornerShape(20.dp))
                             .background(MaterialTheme.colorScheme.secondary)
                             .padding(10.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.home_survey_text),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(Modifier.height(10.dp))
-                        Button(
-                            onClick = {
-                                uriHandler.openUri("https://forms.gle/uNm3wsPQeSnuMrtF8")
-                            },
-                            colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground),
-                            contentPadding = PaddingValues(horizontal = 30.dp),
-                            modifier = Modifier.height(30.dp)
-                        ) {
-                            Text(
-                                text = stringResource(Res.string.home_take_survey),
-                                style = MaterialTheme.typography.labelMedium
+                        firstContent = {
+                            CountdownTimer(
+                                timerState = homeTimerState,
+                                currentTimeMillis = currentTimeMillis,
+                                modifier = Modifier.padding(horizontal = 20.dp)
                             )
-                        }
-                    }
+                        },
+                        secondContent = {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.home_survey_text),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(Modifier.height(10.dp))
+                                Button(
+                                    onClick = {
+                                        uriHandler.openUri("https://forms.gle/uNm3wsPQeSnuMrtF8")
+                                    },
+                                    colors = ButtonDefaults.buttonColors().copy(containerColor = MaterialTheme.colorScheme.onBackground),
+                                    contentPadding = PaddingValues(horizontal = 30.dp),
+                                    modifier = Modifier.height(30.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(Res.string.home_take_survey),
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                        },
+                    )
                 }
                 Spacer(Modifier.height(20.dp))
                 BoxWithConstraints(modifier = Modifier.fillMaxWidth().weight(1f)) {
@@ -435,6 +460,114 @@ fun NavigationCard(
     }
 }
 
+@Composable
+fun CountdownTimer(
+    timerState: TimerState,
+    currentTimeMillis: Long,
+    modifier: Modifier = Modifier
+) {
+    //if (timerState is TimerState.Idle) return
+
+    val targetMillis = when (timerState) {
+        is TimerState.Working -> timerState.nextBreakExpectedStartMillis
+        is TimerState.Resting -> timerState.restEndMillis
+        is TimerState.Idle -> 0
+    }
+    println(targetMillis)
+
+    val isResting = timerState is TimerState.Resting
+    val diffSeconds = (targetMillis - (currentTimeMillis - currentTimeMillis % 1000)) / 1000L
+
+    //if (isResting && diffSeconds <= 0) return
+
+    val isMinus = diffSeconds <= 0 && !isResting
+
+    val absoluteSeconds = abs(diffSeconds)
+    val minutes = absoluteSeconds / 60
+    val seconds = absoluteSeconds % 60
+
+    val sign = if (isMinus) "-" else " "
+    val timeString = "$sign${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}"
+
+    val titleText = if (isResting) stringResource(Res.string.timer_rest) else stringResource(Res.string.time_to_next_break)
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = titleText,
+            maxLines = 1,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text(
+                text = "$sign${minutes.toString().padStart(2, '0')}",
+                style = MaterialTheme.typography.headlineMedium,
+                maxLines = 1,
+                color = if (isMinus) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = ":",
+                style = MaterialTheme.typography.headlineMedium,
+                maxLines = 1,
+                color = if (isMinus) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(0.1f)
+            )
+            Text(
+                text = "${seconds.toString().padStart(2, '0')} ",
+                style = MaterialTheme.typography.headlineMedium,
+                maxLines = 1,
+                color = if (isMinus) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+fun MatchMaxHeightBox(
+    showFirst: Boolean,
+    firstContent: @Composable () -> Unit,
+    secondContent: @Composable () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Layout(
+        content = {
+            Box { firstContent() }
+            Box { secondContent() }
+        },
+        modifier = modifier
+    ) { measurables, constraints ->
+        val looseConstraints = constraints.copy(minHeight = 0)
+        val firstPlaceable = measurables[0].measure(looseConstraints)
+        val secondPlaceable = measurables[1].measure(looseConstraints)
+
+        val maxHeight = maxOf(firstPlaceable.height, secondPlaceable.height)
+
+        val currentWidth = if (showFirst) firstPlaceable.width else secondPlaceable.width
+
+        layout(width = currentWidth, height = maxHeight) {
+            if (showFirst) {
+                val yOffset = (maxHeight - firstPlaceable.height) / 2
+                firstPlaceable.placeRelative(0, yOffset)
+            } else {
+                val yOffset = (maxHeight - secondPlaceable.height) / 2
+                secondPlaceable.placeRelative(0, yOffset)
+            }
+        }
+    }
+}
+
 @Preview()
 @Composable
 fun HomeScreenPreview() {
@@ -442,7 +575,9 @@ fun HomeScreenPreview() {
         HomeScreenContent(
             isFirstScheduleVisit = false,
             shouldShowHomeSurvey = true,
-            hasCurrentBreak = false
+            hasCurrentBreak = false,
+            homeTimerState = TimerState.Idle,
+            currentTimeMillis = 0L
         )
     }
 }

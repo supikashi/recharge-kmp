@@ -7,7 +7,7 @@ enum class PomodoroType(
 ) {
     DEBUG(
         workMinutes = 2,
-        restMinutes = 3,
+        restMinutes = 1,
         displayName = "Классический (25/5)"
     ),
     CLASSIC(

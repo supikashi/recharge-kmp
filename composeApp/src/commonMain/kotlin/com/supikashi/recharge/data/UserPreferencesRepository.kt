@@ -24,6 +24,16 @@ class UserPreferencesRepository(
         private val SELECTED_POMODORO_TYPE_KEY = intPreferencesKey("selected_pomodoro_type")
         private val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_completed")
         private val APP_LANGUAGE_KEY = intPreferencesKey("app_language")
+        private val ACTIVE_REST_END_TIMESTAMP_KEY = longPreferencesKey("active_rest_end_timestamp")
+    }
+
+    val activeRestEndTimestamp: Flow<Long> = dataStore.data
+        .map { preferences -> preferences[ACTIVE_REST_END_TIMESTAMP_KEY] ?: 0L }
+
+    suspend fun setActiveRestEndTimestamp(timestamp: Long) {
+        dataStore.edit { preferences ->
+            preferences[ACTIVE_REST_END_TIMESTAMP_KEY] = timestamp
+        }
     }
 
     val appLanguage: Flow<AppLanguage> = dataStore.data
@@ -116,6 +126,7 @@ class UserPreferencesRepository(
             preferences.remove(SELECTED_POMODORO_TYPE_KEY)
             preferences.remove(ONBOARDING_COMPLETED_KEY)
             preferences.remove(APP_LANGUAGE_KEY)
+            preferences.remove(ACTIVE_REST_END_TIMESTAMP_KEY)
         }
     }
 }

@@ -170,4 +170,6 @@
     <string name="language_system">Как в системе</string>
     <string name="language_ru">Русский</string>
     <string name="language_en">English</string>
+    <string name="timer_rest">Отдых</string>
+    <string name="time_to_next_break">До следующего перерыва</string>
 </resources>

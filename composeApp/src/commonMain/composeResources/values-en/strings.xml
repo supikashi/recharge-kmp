@@ -160,7 +160,7 @@
     <string name="day_saturday">Saturday</string>
     <string name="day_sunday">Sunday</string>
     <string name="notification_time_to_rest_title">Time to rest!</string>
-    <string name="notification_time_to_rest_desc">Let\'s step out of the flow for a minute — your mind and body will thank you</string>
+    <string name="notification_time_to_rest_desc">Let's step out of the flow for a minute — your mind and body will thank you</string>
     <string name="notification_break_ended_title">Break is over!</string>
     <string name="notification_break_ended_desc">Time to get back to your tasks</string>
     <string name="settings_language">Change language</string>
@@ -168,4 +168,6 @@
     <string name="language_system">System</string>
     <string name="language_ru">Русский</string>
     <string name="language_en">English</string>
+    <string name="timer_rest">Rest</string>
+    <string name="time_to_next_break">Time to next break</string>
 </resources>
