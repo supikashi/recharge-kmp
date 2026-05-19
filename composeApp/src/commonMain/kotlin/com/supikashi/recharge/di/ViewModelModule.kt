@@ -18,7 +18,7 @@ val viewModelModule = module {
     viewModel { PomodoroSelectionViewModel(get(), get()) }
     viewModel { SlotViewModel(get(), get()) }
     viewModel { NotificationViewModel(get(), get(), get()) }
-    viewModel { BreakNotificationViewModel(get(), get(), get()) }
+    viewModel { BreakNotificationViewModel(get(), get(), get(), get()) }
     viewModel { StatisticsViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { RestActivitiesViewModel(get()) }

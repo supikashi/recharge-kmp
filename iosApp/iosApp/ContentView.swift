@@ -3,8 +3,10 @@ import SwiftUI
 import ComposeApp
 
 struct ComposeView: UIViewControllerRepresentable {
+    private let timerBackgroundService = LiveActivityTimerBackgroundService()
+
     func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
+        MainViewControllerKt.MainViewController(timerBackgroundService: timerBackgroundService)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
@@ -17,6 +19,5 @@ struct ContentView: View {
             .ignoresSafeArea()
     }
 }
-
 
 

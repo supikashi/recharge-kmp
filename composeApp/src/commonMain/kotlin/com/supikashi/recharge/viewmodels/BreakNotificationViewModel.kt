@@ -2,6 +2,7 @@ package com.supikashi.recharge.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.supikashi.recharge.background.TimerBackgroundService
 import com.supikashi.recharge.data.UserPreferencesRepository
 import com.supikashi.recharge.database.Break
 import com.supikashi.recharge.database.TaskDatabase
@@ -31,6 +32,7 @@ class BreakNotificationViewModel(
     private val database: TaskDatabase,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val notificationScheduler: NotificationScheduler,
+    private val timerBackgroundService: TimerBackgroundService,
 ) : ViewModel() {
     private val dao = database.taskDao()
 
@@ -99,6 +101,7 @@ class BreakNotificationViewModel(
                 
                 notificationScheduler.scheduleExactBreakNotification(endNotification)
                 userPreferencesRepository.setActiveRestEndTimestamp(exactEndMillis)
+                timerBackgroundService.start(exactEndMillis)
             }
         }
     }
@@ -115,6 +118,8 @@ class BreakNotificationViewModel(
         viewModelScope.launch {
             currentBreak.value?.let { breakItem ->
                 dao.markBreakCompleted(breakItem.id)
+                userPreferencesRepository.setActiveRestEndTimestamp(0L)
+                //timerBackgroundService.stop()
             }
         }
     }

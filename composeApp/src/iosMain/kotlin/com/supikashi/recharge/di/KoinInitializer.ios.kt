@@ -1,15 +1,26 @@
 package com.supikashi.recharge.di
 
+import com.supikashi.recharge.background.NoOpTimerBackgroundService
+import com.supikashi.recharge.background.TimerBackgroundService
 import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatformTools
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual class KoinInitializer {
+actual class KoinInitializer(
+    private val timerBackgroundService: TimerBackgroundService = NoOpTimerBackgroundService(),
+) {
     actual fun init() {
         if (KoinPlatformTools.defaultContext().getOrNull() != null) return
 
         startKoin {
-            modules(appModule, viewModelModule, dataStoreModule, roomModule, notificationModule)
+            modules(
+                appModule,
+                viewModelModule,
+                dataStoreModule,
+                roomModule,
+                notificationModule,
+                timerBackgroundModule(timerBackgroundService)
+            )
         }
     }
 }

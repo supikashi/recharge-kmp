@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">BreakLab</string>
+    <string name="rest_timer_channel_name">Break timer</string>
+    <string name="rest_timer_channel_description">Shows the active break countdown</string>
+    <string name="rest_timer_notification_title">Break in progress</string>
+    <string name="rest_timer_notification_text">Time left until the break ends</string>
 </resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BreakLab</string>
+    <string name="rest_timer_channel_name">Таймер перерыва</string>
+    <string name="rest_timer_channel_description">Показывает активный обратный отсчет перерыва</string>
+    <string name="rest_timer_notification_title">Перерыв</string>
+    <string name="rest_timer_notification_text">Время до окончания перерыва</string>
+</resources>

@@ -19,7 +19,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         FirebaseApp.configure()
         
         UNUserNotificationCenter.current().delegate = self
+        stopExpiredLiveActivitiesIfNeeded()
         return true
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        stopExpiredLiveActivitiesIfNeeded()
     }
     
     
@@ -38,5 +43,13 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         
         completionHandler([.banner, .sound, .badge])
+    }
+
+    private func stopExpiredLiveActivitiesIfNeeded() {
+        guard #available(iOS 16.1, *) else { return }
+
+        _Concurrency.Task { @MainActor in
+            await BreakTimerLiveActivityController.shared.stopExpiredActivitiesIfNeeded()
+        }
     }
 }

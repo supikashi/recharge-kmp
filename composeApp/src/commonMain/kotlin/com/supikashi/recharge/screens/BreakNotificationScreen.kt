@@ -170,6 +170,7 @@ fun BreakNotificationScreen(
                         Button(
                             onClick = {
                                 AnalyticsLogger.logEvent("break_notification_cancel_clicked")
+                                viewModel.cancelBreak()
                                 onNavigateToBreakResult("CANCELLED", 0)
                             },
                             modifier = Modifier

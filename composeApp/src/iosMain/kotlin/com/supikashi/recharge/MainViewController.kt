@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.ComposeUIViewController
+import com.supikashi.recharge.background.NoOpTimerBackgroundService
+import com.supikashi.recharge.background.TimerBackgroundService
 import com.supikashi.recharge.database.getRoomDatabase
 import com.supikashi.recharge.di.KoinInitializer
 
@@ -16,9 +18,11 @@ var shouldOpenBreakNotificationScreen: Boolean
         _shouldOpenBreakNotification.value = value
     }
 
-fun MainViewController() = ComposeUIViewController(
+fun MainViewController(
+    timerBackgroundService: TimerBackgroundService = NoOpTimerBackgroundService(),
+) = ComposeUIViewController(
     configure = {
-        KoinInitializer().init()
+        KoinInitializer(timerBackgroundService).init()
     }
 ) {
     val dao = remember {

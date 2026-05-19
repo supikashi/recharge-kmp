@@ -12,13 +12,46 @@
 		087D16792F5F3F11006DF581 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 087D16782F5F3F11006DF581 /* FirebaseAnalytics */; };
 		087D167B2F5F3F11006DF581 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 087D167A2F5F3F11006DF581 /* FirebaseAnalyticsCore */; };
 		087D167D2F5F3F11006DF581 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 087D167C2F5F3F11006DF581 /* FirebaseAnalyticsIdentitySupport */; };
+		1A93E4F02D6A4C0D9F000001 /* BreakTimerLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1A93E4F12D6A4C0D9F000001 /* BreakTimerLiveActivityExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		1A93E4F22D6A4C0D9F000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08743A11F9A4A0A19812DE6B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1A93E4F32D6A4C0D9F000001;
+			remoteInfo = BreakTimerLiveActivityExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1A93E4F42D6A4C0D9F000001 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1A93E4F02D6A4C0D9F000001 /* BreakTimerLiveActivityExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		1A93E4F12D6A4C0D9F000001 /* BreakTimerLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BreakTimerLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B60FC230DBC275F62787A96 /* BreakLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreakLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1A93E4F52D6A4C0D9F000001 /* Exceptions for "BreakTimerLiveActivityExtension" folder in "BreakTimerLiveActivityExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 1A93E4F32D6A4C0D9F000001 /* BreakTimerLiveActivityExtension */;
+		};
 		5FC15A03547D3BACF57DF463 /* Exceptions for "iosApp" folder in "iosApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -35,6 +68,19 @@
 				5FC15A03547D3BACF57DF463 /* Exceptions for "iosApp" folder in "iosApp" target */,
 			);
 			path = iosApp;
+			sourceTree = "<group>";
+		};
+		1A93E4F62D6A4C0D9F000001 /* BreakTimerLiveActivityExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1A93E4F52D6A4C0D9F000001 /* Exceptions for "BreakTimerLiveActivityExtension" folder in "BreakTimerLiveActivityExtension" target */,
+			);
+			path = BreakTimerLiveActivityExtension;
+			sourceTree = "<group>";
+		};
+		1A93E4F72D6A4C0D9F000001 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		22C5908DF1413556E713723C /* Configuration */ = {
@@ -57,6 +103,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1A93E4F82D6A4C0D9F000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -64,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				3B60FC230DBC275F62787A96 /* BreakLab.app */,
+				1A93E4F12D6A4C0D9F000001 /* BreakTimerLiveActivityExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -73,6 +127,8 @@
 			children = (
 				22C5908DF1413556E713723C /* Configuration */,
 				06E787D655C7651A0CF400B2 /* iosApp */,
+				1A93E4F72D6A4C0D9F000001 /* Shared */,
+				1A93E4F62D6A4C0D9F000001 /* BreakTimerLiveActivityExtension */,
 				4429F9362F797C4C169EF2F7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -80,6 +136,27 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1A93E4F32D6A4C0D9F000001 /* BreakTimerLiveActivityExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A93E4FD2D6A4C0D9F000001 /* Build configuration list for PBXNativeTarget "BreakTimerLiveActivityExtension" */;
+			buildPhases = (
+				1A93E4FA2D6A4C0D9F000001 /* Sources */,
+				1A93E4F82D6A4C0D9F000001 /* Frameworks */,
+				1A93E4F92D6A4C0D9F000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				1A93E4F62D6A4C0D9F000001 /* BreakTimerLiveActivityExtension */,
+				1A93E4F72D6A4C0D9F000001 /* Shared */,
+			);
+			name = BreakTimerLiveActivityExtension;
+			productName = BreakTimerLiveActivityExtension;
+			productReference = 1A93E4F12D6A4C0D9F000001 /* BreakTimerLiveActivityExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		F380B45192A9C6EB4ADE6E1A /* iosApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C4FE344CACCAD876921DBBB1 /* Build configuration list for PBXNativeTarget "iosApp" */;
@@ -88,13 +165,16 @@
 				5BF8611A6ABA8236008FFED4 /* Sources */,
 				0A03A8AD02B3C0DEF33B0F96 /* Frameworks */,
 				475E851737F86E5F7F604629 /* Resources */,
+				1A93E4F42D6A4C0D9F000001 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				1A93E4FC2D6A4C0D9F000001 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				06E787D655C7651A0CF400B2 /* iosApp */,
+				1A93E4F72D6A4C0D9F000001 /* Shared */,
 			);
 			name = iosApp;
 			productName = iosApp;
@@ -111,6 +191,9 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
+					1A93E4F32D6A4C0D9F000001 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					F380B45192A9C6EB4ADE6E1A = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -134,11 +217,19 @@
 			projectRoot = "";
 			targets = (
 				F380B45192A9C6EB4ADE6E1A /* iosApp */,
+				1A93E4F32D6A4C0D9F000001 /* BreakTimerLiveActivityExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1A93E4F92D6A4C0D9F000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		475E851737F86E5F7F604629 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -171,6 +262,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1A93E4FA2D6A4C0D9F000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5BF8611A6ABA8236008FFED4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -180,7 +278,79 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		1A93E4FC2D6A4C0D9F000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1A93E4F32D6A4C0D9F000001 /* BreakTimerLiveActivityExtension */;
+			targetProxy = 1A93E4F22D6A4C0D9F000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		1A93E4FE2D6A4C0D9F000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 7;
+				DEVELOPMENT_TEAM = 8XRN4B69W4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BreakTimerLiveActivityExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "BreakLab Timer";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.supikashi.BreakLab.BreakTimerLiveActivityExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		1A93E4FF2D6A4C0D9F000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 7;
+				DEVELOPMENT_TEAM = 8XRN4B69W4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BreakTimerLiveActivityExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "BreakLab Timer";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.supikashi.BreakLab.BreakTimerLiveActivityExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		5934038D772513FC3A9B6D15 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -384,6 +554,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1A93E4FD2D6A4C0D9F000001 /* Build configuration list for PBXNativeTarget "BreakTimerLiveActivityExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A93E4FE2D6A4C0D9F000001 /* Debug */,
+				1A93E4FF2D6A4C0D9F000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C4FE344CACCAD876921DBBB1 /* Build configuration list for PBXNativeTarget "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
