@@ -2,7 +2,6 @@ package com.supikashi.recharge.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.supikashi.recharge.database.Break
 import com.supikashi.recharge.database.TaskDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +22,10 @@ import kotlin.time.ExperimentalTime
 
 data class DailyBreakStats(
     val totalBreaks: Int = 0,
-    val completedBreaks: Int = 0
+    val completedBreaks: Int = 0,
+    val postponedBreaks: Int = 0,
+    val cancelledBreaks: Int = 0,
+    val averageDelaySeconds: Int? = null
 ) {
     val completionPercentage: Float
         get() = if (totalBreaks > 0) completedBreaks.toFloat() / totalBreaks else 0f
@@ -87,9 +89,15 @@ class StatisticsViewModel(
                 dao.getBreaksByDate(date.toString())
                     .map { breaks ->
                         val restBreaks = breaks.filter { it.isForBreak }
+                        val completedRestBreaks = restBreaks.filter { it.isCompleted && !it.isCancelled }
+                        val delays = completedRestBreaks.mapNotNull { it.delaySeconds }
+                        val averageDelay = if (delays.isNotEmpty()) delays.sum() / delays.size else null
                         DailyBreakStats(
                             totalBreaks = restBreaks.size,
-                            completedBreaks = restBreaks.count { it.isCompleted }
+                            completedBreaks = completedRestBreaks.size,
+                            postponedBreaks = restBreaks.sumOf { it.postponeCount },
+                            cancelledBreaks = restBreaks.count { it.isCancelled },
+                            averageDelaySeconds = averageDelay
                         )
                     }
             } else {
@@ -104,18 +112,6 @@ class StatisticsViewModel(
             if (date != null) {
                 val startDate = date.plus(-6, DateTimeUnit.DAY)
                 dao.getMoodRecordsByDateRange(startDate, date).map { records ->
-
-
-
-
-
-
-
-
-
-
-
-
                         val grouped = records.groupBy { it.date }
                         
                         val days = (0..6).map { offset ->

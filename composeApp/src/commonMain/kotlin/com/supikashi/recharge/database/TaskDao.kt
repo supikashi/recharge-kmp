@@ -107,8 +107,11 @@ interface TaskDao {
     @Query("UPDATE Break SET isNotificationScheduled = 0 WHERE isNotificationScheduled = 1")
     suspend fun resetAllNotificationFlags()
 
-    @Query("UPDATE Break SET isCompleted = 1, isNotificationScheduled = 0 WHERE id = :breakId")
-    suspend fun markBreakCompleted(breakId: Int)
+    @Query("UPDATE Break SET isCompleted = 1, isCancelled = 0, isNotificationScheduled = 0, delaySeconds = :delaySeconds WHERE id = :breakId")
+    suspend fun markBreakCompleted(breakId: Int, delaySeconds: Int?)
+
+    @Query("UPDATE Break SET isCompleted = 0, isCancelled = 1, isNotificationScheduled = 0, delaySeconds = NULL WHERE id = :breakId")
+    suspend fun markBreakCancelled(breakId: Int)
 
     @Query("SELECT * FROM Break WHERE date = :date ORDER BY time ASC")
     fun getBreaksByDate(date: String): Flow<List<Break>>
@@ -146,7 +149,8 @@ interface TaskDao {
                 breakItem.copy(
                     id = 0, 
                     time = breakItem.time + 5,
-                    isNotificationScheduled = false 
+                    isNotificationScheduled = false,
+                    postponeCount = breakItem.postponeCount + if (breakItem.id == currentBreak.id) 1 else 0
                 )
             }
             .filter { it.time + breakDuration <= task.endTime } 

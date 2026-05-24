@@ -75,6 +75,11 @@ import recharge.composeapp.generated.resources.stats_title
 import recharge.composeapp.generated.resources.stats_trend_negative
 import recharge.composeapp.generated.resources.stats_trend_neutral
 import recharge.composeapp.generated.resources.stats_trend_positive
+import recharge.composeapp.generated.resources.stats_average_delay_title
+import recharge.composeapp.generated.resources.stats_average_delay_format_min_sec
+import recharge.composeapp.generated.resources.stats_average_delay_format_sec
+import recharge.composeapp.generated.resources.stats_cancelled_breaks_title
+import recharge.composeapp.generated.resources.stats_postponed_breaks_title
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -302,7 +307,88 @@ fun StatisticsScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 35.dp, vertical = 10.dp).heightIn(min = 60.dp)
                 )
+
+                if (dailyStats.averageDelaySeconds != null) {
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = stringResource(Res.string.stats_average_delay_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(5.dp))
+
+                    val delay = dailyStats.averageDelaySeconds!!
+                    val minutes = delay / 60
+                    val seconds = delay % 60
+                    val delayText = if (minutes > 0) {
+                        stringResource(Res.string.stats_average_delay_format_min_sec, minutes, seconds)
+                    } else {
+                        stringResource(Res.string.stats_average_delay_format_sec, seconds)
+                    }
+
+                    val color = when {
+                        delay < 60 -> Color(0xFF4CAF50) // Green
+                        delay > 300 -> Color(0xFFF44336) // Red
+                        else -> MaterialTheme.colorScheme.onBackground
+                    }
+
+                    Text(
+                        text = delayText,
+                        style = MaterialTheme.typography.headlineMedium.copy(color = color),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(20.dp))
+                }
+
+                if (dailyStats.totalBreaks > 0) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        BreakCountStat(
+                            title = stringResource(Res.string.stats_postponed_breaks_title),
+                            count = dailyStats.postponedBreaks,
+                            modifier = Modifier.weight(1f)
+                        )
+                        BreakCountStat(
+                            title = stringResource(Res.string.stats_cancelled_breaks_title),
+                            count = dailyStats.cancelledBreaks,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun BreakCountStat(
+    title: String,
+    count: Int,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(horizontal = 12.dp, vertical = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelMedium,
+            textAlign = TextAlign.Center,
+            minLines = 2
+        )
+        Text(
+            text = count.toString(),
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center
+        )
     }
 }

@@ -74,8 +74,9 @@ class BreakNotificationViewModel(
             _currentBreak.value = breaks.firstOrNull { breakItem ->
                 breakItem.date == today &&
                         !breakItem.isCompleted &&
+                        !breakItem.isCancelled &&
                         breakItem.time <= currentTimeMinutes &&
-                        currentTimeMinutes <= breakItem.time + 1
+                        currentTimeMinutes < breakItem.time + 10
             }
             pomodoroType = userPreferencesRepository.selectedPomodoroType.first()
             _isLoading.value = false
@@ -86,7 +87,12 @@ class BreakNotificationViewModel(
     fun markBreakCompleted() {
         viewModelScope.launch {
             currentBreak.value?.let { breakItem ->
-                dao.markBreakCompleted(breakItem.id)
+                val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                val currentSeconds = (now.hour * 60 + now.minute) * 60 + now.second
+                val expectedSeconds = breakItem.time * 60
+                val delay = kotlin.math.max(0, currentSeconds - expectedSeconds)
+
+                dao.markBreakCompleted(breakItem.id, delay)
                 val duration = pomodoroType?.restMinutes ?: 5
                 
                 val exactEndMillis = ((Clock.System.now().toEpochMilliseconds() + duration * 60 * 1000L + 999) / 1000) * 1000
@@ -117,9 +123,8 @@ class BreakNotificationViewModel(
     fun cancelBreak() {
         viewModelScope.launch {
             currentBreak.value?.let { breakItem ->
-                dao.markBreakCompleted(breakItem.id)
+                dao.markBreakCancelled(breakItem.id)
                 userPreferencesRepository.setActiveRestEndTimestamp(0L)
-                //timerBackgroundService.stop()
             }
         }
     }

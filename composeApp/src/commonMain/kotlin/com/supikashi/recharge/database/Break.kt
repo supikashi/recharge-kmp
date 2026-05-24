@@ -3,6 +3,7 @@ package com.supikashi.recharge.database
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -29,4 +30,9 @@ data class Break @OptIn(ExperimentalTime::class) constructor(
     val isForBreak: Boolean = true,
     val isCompleted: Boolean = false,
     val isNotificationScheduled: Boolean = false,
+    val delaySeconds: Int? = null,
+    @ColumnInfo(defaultValue = "0")
+    val isCancelled: Boolean = false,
+    @ColumnInfo(defaultValue = "0")
+    val postponeCount: Int = 0
 )

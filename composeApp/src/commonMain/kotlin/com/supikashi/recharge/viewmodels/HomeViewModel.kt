@@ -65,8 +65,9 @@ class HomeViewModel(
         breaks.firstOrNull { breakItem ->
             breakItem.date == today &&
             !breakItem.isCompleted &&
+            !breakItem.isCancelled &&
             breakItem.time <= currentTimeMinutes &&
-            currentTimeMinutes < breakItem.time + 1
+            currentTimeMinutes < breakItem.time + 10
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
@@ -99,7 +100,8 @@ class HomeViewModel(
             val nextBreak = currentTask?.breaks?.firstOrNull { breakItem ->
                 breakItem.date == today
                 && !breakItem.isCompleted
-                && currentTimeMinutes < breakItem.time + 1
+                && !breakItem.isCancelled
+                && currentTimeMinutes < breakItem.time + 10
             }
 
             if (nextBreak != null) {

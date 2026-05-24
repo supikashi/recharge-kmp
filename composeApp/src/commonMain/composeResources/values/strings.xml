@@ -104,6 +104,11 @@
     <string name="stats_you_rested">Ты отдохнул</string>
     <string name="stats_times">раз</string>
     <string name="stats_mood_chart_title">График самочувствия</string>
+    <string name="stats_average_delay_title">Среднее время опоздания перерыва</string>
+    <string name="stats_average_delay_format_min_sec">%1$d мин %2$d сек</string>
+    <string name="stats_average_delay_format_sec">%1$d сек</string>
+    <string name="stats_postponed_breaks_title">Отложено перерывов</string>
+    <string name="stats_cancelled_breaks_title">Отменено перерывов</string>
 
     <string name="notification_permission_title">Разрешение на уведомления</string>
     <string name="notification_permission_desc">Чтобы напоминать вам об отдыхе приложению необходим доступ к уведомлениям. Пожалуйста, включите их в настройках</string>

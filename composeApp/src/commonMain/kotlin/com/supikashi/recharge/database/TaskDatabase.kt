@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import androidx.room.AutoMigration
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -14,7 +15,11 @@ import kotlin.jvm.JvmStatic
 
 @Database(
     entities = [Task::class, Break::class, MoodRecord::class],
-    version = 2
+    version = 4,
+    autoMigrations = [
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4)
+    ]
 )
 @TypeConverters(Converters::class)
 @ConstructedBy(TaskDatabaseConstructor::class)
