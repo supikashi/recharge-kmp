@@ -14,11 +14,11 @@ import org.koin.dsl.module
 
 val viewModelModule = module {
     viewModel { OnboardingViewModel(get()) }
-    viewModel { HomeViewModel(get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { PomodoroSelectionViewModel(get(), get()) }
     viewModel { SlotViewModel(get(), get()) }
     viewModel { NotificationViewModel(get(), get(), get()) }
-    viewModel { BreakNotificationViewModel(get(), get(), get(), get()) }
+    viewModel { BreakNotificationViewModel(get(), get(), get(), get(), get()) }
     viewModel { StatisticsViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { RestActivitiesViewModel(get()) }

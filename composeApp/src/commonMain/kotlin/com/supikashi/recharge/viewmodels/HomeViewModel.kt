@@ -2,6 +2,7 @@ package com.supikashi.recharge.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.supikashi.recharge.data.PuzzleRepository
 import com.supikashi.recharge.data.UserPreferencesRepository
 import com.supikashi.recharge.database.Break
 import com.supikashi.recharge.database.TaskDatabase
@@ -33,7 +34,8 @@ sealed class TimerState {
 
 class HomeViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val database: TaskDatabase
+    private val database: TaskDatabase,
+    private val puzzleRepository: PuzzleRepository
 ) : ViewModel() {
     private val dao = database.taskDao()
 
@@ -140,6 +142,16 @@ class HomeViewModel(
             userPreferencesRepository.ensureFirstLaunchTimestamp()
         }
         startTimeUpdateLoop()
+        viewModelScope.launch {
+            var lastPuzzleStatusUpdateMinute = -1L
+            _currentTimeMillis.collect { timeMillis ->
+                val currentMinute = timeMillis / 60000L
+                if (currentMinute != lastPuzzleStatusUpdateMinute) {
+                    lastPuzzleStatusUpdateMinute = currentMinute
+                    puzzleRepository.updateDayStatuses()
+                }
+            }
+        }
     }
 
     @OptIn(ExperimentalTime::class)

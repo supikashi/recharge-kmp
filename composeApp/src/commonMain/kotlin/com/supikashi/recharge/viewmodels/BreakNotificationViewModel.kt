@@ -3,6 +3,7 @@ package com.supikashi.recharge.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.supikashi.recharge.background.TimerBackgroundService
+import com.supikashi.recharge.data.PuzzleRepository
 import com.supikashi.recharge.data.UserPreferencesRepository
 import com.supikashi.recharge.database.Break
 import com.supikashi.recharge.database.TaskDatabase
@@ -33,6 +34,7 @@ class BreakNotificationViewModel(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val notificationScheduler: NotificationScheduler,
     private val timerBackgroundService: TimerBackgroundService,
+    private val puzzleRepository: PuzzleRepository,
 ) : ViewModel() {
     private val dao = database.taskDao()
 
@@ -93,6 +95,7 @@ class BreakNotificationViewModel(
                 val delay = kotlin.math.max(0, currentSeconds - expectedSeconds)
 
                 dao.markBreakCompleted(breakItem.id, delay)
+                puzzleRepository.updateDayStatuses()
                 val duration = pomodoroType?.restMinutes ?: 5
                 
                 val exactEndMillis = ((Clock.System.now().toEpochMilliseconds() + duration * 60 * 1000L + 999) / 1000) * 1000

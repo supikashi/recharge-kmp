@@ -116,6 +116,21 @@ interface TaskDao {
     @Query("SELECT * FROM Break WHERE date = :date ORDER BY time ASC")
     fun getBreaksByDate(date: String): Flow<List<Break>>
 
+    @Query("SELECT * FROM Break WHERE date = :date ORDER BY time ASC")
+    suspend fun getBreaksByDateSync(date: String): List<Break>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertPuzzleDayStatus(dayStatus: PuzzleDayStatus)
+
+    @Query("SELECT * FROM PuzzleDayStatus WHERE date = :date")
+    suspend fun getPuzzleDayStatusByDate(date: String): PuzzleDayStatus?
+
+    @Query("SELECT * FROM PuzzleDayStatus ORDER BY date DESC LIMIT 1")
+    suspend fun getLatestPuzzleDayStatus(): PuzzleDayStatus?
+
+    @Query("DELETE FROM PuzzleDayStatus WHERE date = :date")
+    suspend fun deletePuzzleDayStatus(date: String)
+
     @Transaction
     suspend fun updateTaskSchedule(
         task: Task,

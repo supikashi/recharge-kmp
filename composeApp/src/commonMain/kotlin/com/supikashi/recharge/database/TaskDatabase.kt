@@ -14,11 +14,12 @@ import kotlinx.datetime.LocalDate
 import kotlin.jvm.JvmStatic
 
 @Database(
-    entities = [Task::class, Break::class, MoodRecord::class],
-    version = 4,
+    entities = [Task::class, Break::class, MoodRecord::class, PuzzleDayStatus::class],
+    version = 5,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4)
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5)
     ]
 )
 @TypeConverters(Converters::class)
