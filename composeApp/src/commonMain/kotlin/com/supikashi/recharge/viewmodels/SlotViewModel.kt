@@ -180,7 +180,7 @@ class SlotViewModel(
             val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
             val today = now.date
             val currentTimeMinutes = now.hour * 60 + now.minute
-            val startFromTime = if (task.date == today && task.startTime < currentTimeMinutes && task.endTime > currentTimeMinutes) {
+            val startFromTime = if (task.date == today && task.startTime < currentTimeMinutes) {
                 currentTimeMinutes
             } else {
                 null

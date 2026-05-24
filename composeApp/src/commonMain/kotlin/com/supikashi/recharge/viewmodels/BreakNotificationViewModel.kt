@@ -64,6 +64,12 @@ class BreakNotificationViewModel(
 
     val breakDuration = userPreferencesRepository.selectedPomodoroType.map { it?.restMinutes ?: 0 }
 
+    val puzzles = puzzleRepository.getPuzzles().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     private var pomodoroType : PomodoroType? = null
 
     init {

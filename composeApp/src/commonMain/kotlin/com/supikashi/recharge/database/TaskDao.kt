@@ -110,7 +110,7 @@ interface TaskDao {
     @Query("UPDATE Break SET isCompleted = 1, isCancelled = 0, isNotificationScheduled = 0, delaySeconds = :delaySeconds WHERE id = :breakId")
     suspend fun markBreakCompleted(breakId: Int, delaySeconds: Int?)
 
-    @Query("UPDATE Break SET isCompleted = 0, isCancelled = 1, isNotificationScheduled = 0, delaySeconds = NULL WHERE id = :breakId")
+    @Query("UPDATE Break SET isCompleted = 1, isCancelled = 1, isNotificationScheduled = 0, delaySeconds = NULL WHERE id = :breakId")
     suspend fun markBreakCancelled(breakId: Int)
 
     @Query("SELECT * FROM Break WHERE date = :date ORDER BY time ASC")
@@ -128,8 +128,50 @@ interface TaskDao {
     @Query("SELECT * FROM PuzzleDayStatus ORDER BY date DESC LIMIT 1")
     suspend fun getLatestPuzzleDayStatus(): PuzzleDayStatus?
 
+    @Query("SELECT * FROM PuzzleDayStatus ORDER BY date ASC")
+    suspend fun getPuzzleDayStatusesSorted(): List<PuzzleDayStatus>
+
+    @Query("SELECT * FROM PuzzleDayStatus ORDER BY date DESC")
+    fun getPuzzleDayStatusesFlow(): Flow<List<PuzzleDayStatus>>
+
     @Query("DELETE FROM PuzzleDayStatus WHERE date = :date")
     suspend fun deletePuzzleDayStatus(date: String)
+
+    @Query("DELETE FROM PuzzleDayStatus")
+    suspend fun deleteAllPuzzleDayStatuses()
+
+    @Upsert
+    suspend fun upsertPuzzle(puzzle: Puzzle)
+
+    @Upsert
+    suspend fun upsertPuzzles(puzzles: List<Puzzle>)
+
+    @Query("SELECT * FROM Puzzle ORDER BY id DESC LIMIT 1")
+    suspend fun getLatestPuzzle(): Puzzle?
+
+    @Query("SELECT * FROM Puzzle ORDER BY id ASC")
+    fun getPuzzlesFlow(): Flow<List<Puzzle>>
+
+    @Query("DELETE FROM Puzzle")
+    suspend fun deleteAllPuzzles()
+
+    @Transaction
+    suspend fun replacePuzzleDebugState(
+        dayStatus: PuzzleDayStatus,
+        puzzles: List<Puzzle>
+    ) {
+        upsertPuzzleDayStatus(dayStatus)
+        deleteAllPuzzles()
+        if (puzzles.isNotEmpty()) {
+            upsertPuzzles(puzzles)
+        }
+    }
+
+    @Transaction
+    suspend fun resetPuzzleDebugState() {
+        deleteAllPuzzleDayStatuses()
+        deleteAllPuzzles()
+    }
 
     @Transaction
     suspend fun updateTaskSchedule(

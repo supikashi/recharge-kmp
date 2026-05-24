@@ -8,6 +8,8 @@ object PuzzleDayStatusValue {
     const val SUCCESS = "success"
     const val FAIL = "fail"
     const val SKIPED = "skiped"
+
+    val all = setOf(SUCCESS, FAIL, SKIPED)
 }
 
 @Entity

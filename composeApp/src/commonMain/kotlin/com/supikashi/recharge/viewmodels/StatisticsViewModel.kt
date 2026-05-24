@@ -2,6 +2,9 @@ package com.supikashi.recharge.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.supikashi.recharge.data.PuzzleRepository
+import com.supikashi.recharge.database.Puzzle
+import com.supikashi.recharge.database.PuzzleDayStatus
 import com.supikashi.recharge.database.TaskDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,7 +62,8 @@ data class MoodTrendStats(
 }
 
 class StatisticsViewModel(
-    database: TaskDatabase
+    database: TaskDatabase,
+    private val puzzleRepository: PuzzleRepository
 ) : ViewModel() {
     private val dao = database.taskDao()
     
@@ -105,6 +109,24 @@ class StatisticsViewModel(
             }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DailyBreakStats())
+
+    val puzzles: StateFlow<List<Puzzle>> = puzzleRepository.getPuzzles()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val puzzleDayStatuses: StateFlow<List<PuzzleDayStatus>> = puzzleRepository.getPuzzleDayStatuses()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun setDebugPuzzleDayStatus(date: LocalDate, status: String) {
+        viewModelScope.launch {
+            puzzleRepository.setDebugDayStatus(date, status)
+        }
+    }
+
+    fun resetDebugPuzzleState() {
+        viewModelScope.launch {
+            puzzleRepository.resetDebugPuzzleState()
+        }
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val dailyMoodStats: StateFlow<MoodTrendStats> = _selectedDate

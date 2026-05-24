@@ -17,6 +17,9 @@
     <string name="break_notification_passed">This break has already passed</string>
     <string name="break_notification_start_rest">Start resting</string>
     <string name="break_notification_time_to_break">Time to take a break!</string>
+    <string name="break_notification_puzzle_hint">Complete all breaks for the day and get a puzzle piece</string>
+    <string name="stats_day_status_success">You received a puzzle piece for this day</string>
+    <string name="stats_day_status_fail">You lost puzzle progress because you didn\'t complete all breaks</string>
     <string name="break_notification_postpone">Postpone break</string>
     <string name="break_notification_cancel">Cancel break</string>
 
@@ -108,6 +111,22 @@
     <string name="stats_average_delay_format_sec">%1$d sec</string>
     <string name="stats_postponed_breaks_title">Postponed breaks</string>
     <string name="stats_cancelled_breaks_title">Cancelled breaks</string>
+    <string name="stats_puzzles_title">ACHIEVEMENTS</string>
+    <string name="stats_puzzle_current_title">In progress</string>
+    <string name="stats_puzzle_completed_title">Completed puzzles</string>
+    <string name="stats_puzzle_progress">%1$d of %2$d pieces</string>
+    <string name="stats_puzzle_completed_date">Completed %1$s</string>
+    <string name="stats_puzzle_all_completed">All available puzzles are completed</string>
+    <string name="stats_puzzle_collection_button">View collection</string>
+    <string name="stats_puzzle_collection_title">COLLECTION</string>
+    <string name="stats_puzzle_no_completed">No completed puzzles yet</string>
+    <string name="stats_puzzle_debug_title">Debug: day statuses</string>
+    <string name="stats_puzzle_debug_selected_day">Selected day: %1$s — %2$s</string>
+    <string name="stats_puzzle_debug_no_status">no status</string>
+    <string name="stats_puzzle_debug_locked">Only past days can be changed</string>
+    <string name="stats_puzzle_debug_reset">Reset statuses and puzzles</string>
+    <string name="stats_puzzle_debug_saved_days">Saved days</string>
+    <string name="stats_puzzle_debug_no_saved_days">No saved statuses yet</string>
     <string name="notification_permission_title">Notification permission</string>
     <string name="notification_permission_desc">To remind you to rest, the app needs access to notifications. Please enable them in the settings.</string>
     <string name="notification_permission_later">Later</string>

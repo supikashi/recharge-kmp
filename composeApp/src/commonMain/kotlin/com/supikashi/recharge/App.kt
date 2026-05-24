@@ -43,6 +43,7 @@ import com.supikashi.recharge.screens.CalendarScreen
 import com.supikashi.recharge.screens.HomeScreen
 import com.supikashi.recharge.screens.OnboardingScreen
 import com.supikashi.recharge.screens.PomodoroSelectionScreen
+import com.supikashi.recharge.screens.PuzzleCollectionScreen
 import com.supikashi.recharge.screens.RestActivitiesListScreen
 import com.supikashi.recharge.screens.RestActivitiesScreen
 import com.supikashi.recharge.screens.RestScreen
@@ -148,6 +149,9 @@ fun App(
         }
         val debouncedNavigateToStatistics = rememberDebounceClickHandler {
             navController.navigateWithFlags(Screen.Statistics)
+        }
+        val debouncedNavigateToPuzzleCollection = rememberDebounceClickHandler {
+            navController.navigateWithFlags(Screen.PuzzleCollection)
         }
         val debouncedNavigateToScheduleFromPomodoro = rememberDebounceClickHandler {
             navController.navigateWithFlags(Screen.Schedule) {
@@ -382,7 +386,15 @@ fun App(
                         backStackEntry.savedStateHandle.remove<Long>("selected_date")
                         pendingDateEpochDays = date.toEpochDays().toLong()
                         debouncedNavigateToCalendar()
-                    }
+                    },
+                    onNavigateToPuzzleCollection = debouncedNavigateToPuzzleCollection
+                )
+            }
+
+            composable<Screen.PuzzleCollection> {
+                PuzzleCollectionScreen(
+                    onNavigateBack = debouncedNavigateUp,
+                    onNavigateHome = debouncedNavigateToHome
                 )
             }
 

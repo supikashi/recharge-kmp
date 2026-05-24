@@ -19,7 +19,7 @@ val viewModelModule = module {
     viewModel { SlotViewModel(get(), get()) }
     viewModel { NotificationViewModel(get(), get(), get()) }
     viewModel { BreakNotificationViewModel(get(), get(), get(), get(), get()) }
-    viewModel { StatisticsViewModel(get()) }
+    viewModel { StatisticsViewModel(get(), get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { RestActivitiesViewModel(get()) }
 }

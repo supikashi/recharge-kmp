@@ -17,6 +17,9 @@
     <string name="break_notification_passed">Этот перерыв уже прошел</string>
     <string name="break_notification_start_rest">Начать отдыхать</string>
     <string name="break_notification_time_to_break">Время сделать перерыв!</string>
+    <string name="break_notification_puzzle_hint">Выполните все перерывы за день и получите кусочек пазла</string>
+    <string name="stats_day_status_success">За этот день вы получили кусочек пазла</string>
+    <string name="stats_day_status_fail">Вы потеряли прогресс пазла, потому что не выполнили все перерывы</string>
     <string name="break_notification_postpone">Отложить перерыв</string>
     <string name="break_notification_cancel">Отменить перерыв</string>
 
@@ -109,6 +112,22 @@
     <string name="stats_average_delay_format_sec">%1$d сек</string>
     <string name="stats_postponed_breaks_title">Отложено перерывов</string>
     <string name="stats_cancelled_breaks_title">Отменено перерывов</string>
+    <string name="stats_puzzles_title">ДОСТИЖЕНИЯ</string>
+    <string name="stats_puzzle_current_title">Сейчас собирается</string>
+    <string name="stats_puzzle_completed_title">Собранные пазлы</string>
+    <string name="stats_puzzle_progress">%1$d из %2$d кусочков</string>
+    <string name="stats_puzzle_completed_date">Собран %1$s</string>
+    <string name="stats_puzzle_all_completed">Вы собрали все пазлы!</string>
+    <string name="stats_puzzle_collection_button">Смотреть коллекцию</string>
+    <string name="stats_puzzle_collection_title">КОЛЛЕКЦИЯ</string>
+    <string name="stats_puzzle_no_completed">Собранных пазлов пока нет</string>
+    <string name="stats_puzzle_debug_title">Debug: статусы дней</string>
+    <string name="stats_puzzle_debug_selected_day">Выбранный день: %1$s — %2$s</string>
+    <string name="stats_puzzle_debug_no_status">нет статуса</string>
+    <string name="stats_puzzle_debug_locked">Можно менять только прошлые дни</string>
+    <string name="stats_puzzle_debug_reset">Сбросить статусы и пазлы</string>
+    <string name="stats_puzzle_debug_saved_days">Дни в базе</string>
+    <string name="stats_puzzle_debug_no_saved_days">Сохраненных статусов пока нет</string>
 
     <string name="notification_permission_title">Разрешение на уведомления</string>
     <string name="notification_permission_desc">Чтобы напоминать вам об отдыхе приложению необходим доступ к уведомлениям. Пожалуйста, включите их в настройках</string>

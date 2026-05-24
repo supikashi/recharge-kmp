@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,11 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.supikashi.recharge.analytics.AnalyticsLogger
+import com.supikashi.recharge.components.CurrentPuzzleCard
 import com.supikashi.recharge.components.TopBar
+import com.supikashi.recharge.components.PuzzleGrid
+import com.supikashi.recharge.components.currentPuzzleForUi
+import com.supikashi.recharge.data.PuzzleRules
 import com.supikashi.recharge.database.Task
 import com.supikashi.recharge.theme.AppTheme
 import com.supikashi.recharge.theme.mascotPrimary
 import com.supikashi.recharge.viewmodels.BreakNotificationViewModel
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -41,10 +48,13 @@ import recharge.composeapp.generated.resources.Res
 import recharge.composeapp.generated.resources.break_notification_cancel
 import recharge.composeapp.generated.resources.break_notification_passed
 import recharge.composeapp.generated.resources.break_notification_postpone
+import recharge.composeapp.generated.resources.break_notification_puzzle_hint
 import recharge.composeapp.generated.resources.break_notification_start_rest
 import recharge.composeapp.generated.resources.break_notification_time_to_break
 import recharge.composeapp.generated.resources.calendar
 import recharge.composeapp.generated.resources.home
+import recharge.composeapp.generated.resources.stats_puzzle_all_completed
+import kotlin.time.Clock
 
 @Composable
 fun BreakNotificationScreen(
@@ -56,6 +66,8 @@ fun BreakNotificationScreen(
 ) {
     val breakDuration by viewModel.breakDuration.collectAsStateWithLifecycle(0)
     val currentBreak by viewModel.currentBreak.collectAsStateWithLifecycle()
+    val puzzles by viewModel.puzzles.collectAsStateWithLifecycle()
+    val today = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     Scaffold { paddingValues ->
         Column(
@@ -125,7 +137,51 @@ fun BreakNotificationScreen(
                             textAlign = TextAlign.Center,
                         )
 
-                        Spacer(modifier = Modifier.weight(1f))
+                        Spacer(Modifier.height(10.dp))
+                        val currentPuzzle = currentPuzzleForUi(puzzles, isStatisticsScreen = false, today)
+                        if (currentPuzzle != null) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth().weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                CurrentPuzzleCard(
+                                    puzzle = currentPuzzle,
+                                    modifier = Modifier.weight(1f, fill = false)
+                                )
+                                Spacer(Modifier.height(20.dp))
+                                Text(
+                                    text = stringResource(Res.string.break_notification_puzzle_hint),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(horizontal = 20.dp)
+                                )
+                            }
+                        } else {
+                            val lastPuzzle = puzzles.maxByOrNull { it.id }
+                            if (lastPuzzle != null) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth().weight(1f),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    CurrentPuzzleCard(
+                                        puzzle = lastPuzzle,
+                                        modifier = Modifier.weight(1f, fill = false)
+                                    )
+                                    Spacer(Modifier.height(20.dp))
+                                    Text(
+                                        text = stringResource(Res.string.stats_puzzle_all_completed),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.padding(horizontal = 20.dp)
+                                    )
+                                }
+                            } else {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        }
+                        Spacer(Modifier.height(10.dp))
 
                         Button(
                             onClick = {

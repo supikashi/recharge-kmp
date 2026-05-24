@@ -28,6 +28,9 @@ sealed interface Screen {
     data object Statistics : Screen
 
     @Serializable
+    data object PuzzleCollection : Screen
+
+    @Serializable
     data object Task : Screen
 
     @Serializable

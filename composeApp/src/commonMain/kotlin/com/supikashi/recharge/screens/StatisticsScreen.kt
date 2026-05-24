@@ -1,6 +1,8 @@
 package com.supikashi.recharge.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,8 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.supikashi.recharge.analytics.AnalyticsLogger
 import com.supikashi.recharge.components.BreakProgressChart
+import com.supikashi.recharge.components.AchievementsSection
 import com.supikashi.recharge.components.TaskCard
 import com.supikashi.recharge.components.TopBar
+import com.supikashi.recharge.database.PuzzleDayStatus
+import com.supikashi.recharge.database.PuzzleDayStatusValue
 import com.supikashi.recharge.database.Task
 import com.supikashi.recharge.theme.mascotPrimary
 import com.supikashi.recharge.utils.formatDate
@@ -68,6 +73,8 @@ import recharge.composeapp.generated.resources.home
 import recharge.composeapp.generated.resources.stats_completion_good
 import recharge.composeapp.generated.resources.stats_completion_great
 import recharge.composeapp.generated.resources.stats_completion_perfect
+import recharge.composeapp.generated.resources.stats_day_status_success
+import recharge.composeapp.generated.resources.stats_day_status_fail
 import recharge.composeapp.generated.resources.stats_empty_schedule_title
 import recharge.composeapp.generated.resources.stats_record_mood_btn
 import recharge.composeapp.generated.resources.stats_setup_schedule_btn
@@ -80,6 +87,13 @@ import recharge.composeapp.generated.resources.stats_average_delay_format_min_se
 import recharge.composeapp.generated.resources.stats_average_delay_format_sec
 import recharge.composeapp.generated.resources.stats_cancelled_breaks_title
 import recharge.composeapp.generated.resources.stats_postponed_breaks_title
+import recharge.composeapp.generated.resources.stats_puzzle_debug_locked
+import recharge.composeapp.generated.resources.stats_puzzle_debug_no_saved_days
+import recharge.composeapp.generated.resources.stats_puzzle_debug_no_status
+import recharge.composeapp.generated.resources.stats_puzzle_debug_reset
+import recharge.composeapp.generated.resources.stats_puzzle_debug_saved_days
+import recharge.composeapp.generated.resources.stats_puzzle_debug_selected_day
+import recharge.composeapp.generated.resources.stats_puzzle_debug_title
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -95,6 +109,7 @@ fun StatisticsScreen(
     onNavigateToSchedule: (LocalDate) -> Unit, 
     calendarResult: LocalDate? = null,
     onNavigateToCalendar: (LocalDate) -> Unit = {},
+    onNavigateToPuzzleCollection: () -> Unit = {},
     viewModel: StatisticsViewModel = koinViewModel()
 ) {
     val LocalDateSaver = Saver<LocalDate, Long>(
@@ -117,6 +132,9 @@ fun StatisticsScreen(
     
     val dailyStats by viewModel.dailyStats.collectAsStateWithLifecycle()
     val dailyMoodStats by viewModel.dailyMoodStats.collectAsStateWithLifecycle()
+    val puzzles by viewModel.puzzles.collectAsStateWithLifecycle()
+    val puzzleDayStatuses by viewModel.puzzleDayStatuses.collectAsStateWithLifecycle()
+    val today = remember { Clock.System.todayIn(TimeZone.currentSystemDefault()) }
     
     Scaffold { paddingValues ->
         if (showSurveyDialog) {
@@ -273,11 +291,42 @@ fun StatisticsScreen(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(horizontal = 35.dp)
                             )
+                            
+                            val currentDayStatus = puzzleDayStatuses.firstOrNull { it.date == selectedDate }?.status
+                            if (currentDayStatus == PuzzleDayStatusValue.SUCCESS || currentDayStatus == PuzzleDayStatusValue.FAIL) {
+                                Spacer(Modifier.height(10.dp))
+                                Text(
+                                    text = if (currentDayStatus == PuzzleDayStatusValue.SUCCESS) {
+                                        stringResource(Res.string.stats_day_status_success)
+                                    } else {
+                                        stringResource(Res.string.stats_day_status_fail)
+                                    },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(horizontal = 35.dp)
+                                )
+                            }
                         }
                     }
                 }
 
+                AchievementsSection(
+                    puzzles = puzzles,
+                    onOpenCollection = onNavigateToPuzzleCollection,
+                    isStatisticsScreen = true,
+                )
+
                 Spacer(Modifier.height(20.dp))
+
+                PuzzleDayStatusDebugSection(
+                    selectedDate = selectedDate,
+                    dayStatuses = puzzleDayStatuses,
+                    onSetStatus = viewModel::setDebugPuzzleDayStatus,
+                    onReset = viewModel::resetDebugPuzzleState
+                )
+
+                Spacer(Modifier.height(20.dp))
+
                 val positiveTrend = stringResource(Res.string.stats_trend_positive)
                 val negativeTrend = stringResource(Res.string.stats_trend_negative)
                 val neutralTrend = stringResource(Res.string.stats_trend_neutral)
@@ -390,5 +439,183 @@ private fun BreakCountStat(
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
         )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun PuzzleDayStatusDebugSection(
+    selectedDate: LocalDate,
+    dayStatuses: List<PuzzleDayStatus>,
+    onSetStatus: (LocalDate, String) -> Unit,
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val selectedStatus = dayStatuses.firstOrNull { it.date == selectedDate }?.status
+    val canEditSelectedDate = selectedDate < today
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f))
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.16f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = stringResource(Res.string.stats_puzzle_debug_title),
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Text(
+            text = stringResource(
+                Res.string.stats_puzzle_debug_selected_day,
+                formatDate(selectedDate),
+                selectedStatus ?: stringResource(Res.string.stats_puzzle_debug_no_status)
+            ),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        if (canEditSelectedDate) {
+            PuzzleDayStatusDebugButtons(
+                currentStatus = selectedStatus,
+                onSetStatus = { status -> onSetStatus(selectedDate, status) }
+            )
+        } else {
+            Text(
+                text = stringResource(Res.string.stats_puzzle_debug_locked),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+
+        Button(
+            onClick = onReset,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFF44336),
+                contentColor = Color.White
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(Res.string.stats_puzzle_debug_reset),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center
+            )
+        }
+
+        Text(
+            text = stringResource(Res.string.stats_puzzle_debug_saved_days),
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        if (dayStatuses.isEmpty()) {
+            Text(
+                text = stringResource(Res.string.stats_puzzle_debug_no_saved_days),
+                style = MaterialTheme.typography.labelMedium
+            )
+        } else {
+            dayStatuses.forEach { dayStatus ->
+                PuzzleDayStatusDebugRow(
+                    dayStatus = dayStatus,
+                    canEdit = dayStatus.date < today,
+                    onSetStatus = { status -> onSetStatus(dayStatus.date, status) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PuzzleDayStatusDebugRow(
+    dayStatus: PuzzleDayStatus,
+    canEdit: Boolean,
+    onSetStatus: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.72f))
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = formatDate(dayStatus.date),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Text(
+                text = dayStatus.status,
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+
+        if (canEdit) {
+            PuzzleDayStatusDebugButtons(
+                currentStatus = dayStatus.status,
+                onSetStatus = onSetStatus
+            )
+        } else {
+            Text(
+                text = stringResource(Res.string.stats_puzzle_debug_locked),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+    }
+}
+
+@Composable
+private fun PuzzleDayStatusDebugButtons(
+    currentStatus: String?,
+    onSetStatus: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        listOf(
+            PuzzleDayStatusValue.SUCCESS,
+            PuzzleDayStatusValue.FAIL,
+            PuzzleDayStatusValue.SKIPED
+        ).forEach { status ->
+            val isSelected = currentStatus == status
+
+            Button(
+                onClick = { onSetStatus(status) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isSelected) {
+                        MaterialTheme.colorScheme.onBackground
+                    } else {
+                        MaterialTheme.colorScheme.background
+                    },
+                    contentColor = if (isSelected) {
+                        MaterialTheme.colorScheme.background
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
+                    }
+                ),
+                modifier = Modifier.heightIn(min = 36.dp)
+            ) {
+                Text(
+                    text = status,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+        }
     }
 }
